@@ -3,35 +3,6 @@ body {
     font-family: 'Georgia', serif;  
     margin: 0;
     padding: 0;
-    color: #4e3629;  
-}
-
-header {
-    background-color: #6e4b3a;  /* Smeđa boja zaglavlja */
-    color: #fff;
-    padding: 10px;
-}
-
-header nav ul {
-    list-style-type: none;
-    padding: 0;
-    text-align: center;
-}
-
-header nav ul li {
-    display: inline;
-    margin-right: 20px;
-}
-
-header nav ul li a {
-    color: #fbf9f9;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-header nav ul li a:hover {
-    color: #f0c27b; 
 }
 .video-background {
     position: fixed;
@@ -48,49 +19,55 @@ header nav ul li a:hover {
     height: 100%;
 }
 nav {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
+    background-color: #e9e1d6;
+    padding: 8px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.left-nav,
+.right-nav {
+    display: flex;
+    gap: 16px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .left-nav {
-    display: flex;
-}
-
-.left-nav li {
-    margin-right: 20px;
-}
-
-.left-nav li a {
-    color: #fff;
-    text-decoration: none;
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.left-nav li a:hover {
-    color: #f0c27b;  
+    justify-content: flex-start;
 }
 
 .right-nav {
-    display: flex;
-    margin-left: auto; 
+    justify-content: flex-end;
 }
 
-.right-nav li {
-    margin-left: 2px;  
+.title-nav {
+    text-align: center;
 }
 
-.right-nav li a {
-    color: #fff;
+nav li a {
+    color: #6b5c4d;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: color 0.3s ease, background-color 0.3s ease, border-bottom 0.3s ease;
 }
 
-.right-nav li a:hover {
-    color: #f0c27b;  
+nav li a:hover {
+    color: #a18e71;
+    background-color: #f5efe6;
 }
+
+nav li a.active {
+    color: #4f3f30;
+    border-bottom: 2px solid #a18e71;
+}
+
 
 /*footer {
     text-align: center;
@@ -126,20 +103,9 @@ p {
     font-size: 18px;
 }
 
-.video-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 40px 80px;
-    border-radius: 10px;
-    text-align: center;
-    z-index: 1;
-}
-
 .title {
     font-family: 'Libre Baskerville', serif;
-    font-size: 4rem;
+    font-size: 20px;
     color: #a8795ef0;
     text-shadow: 2px 2px 6px rgba(110, 75, 58, 0.6);
     margin: 0;
@@ -160,6 +126,4 @@ p {
     z-index: 2;
     position: relative;
 }
-
-
 

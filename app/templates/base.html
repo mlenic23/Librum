@@ -1,5 +1,4 @@
 {% load static %}
-<link rel="stylesheet" href="{% static 'styles.css' %}">
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,16 +13,17 @@
     <header>
         <nav>
             <ul class="left-nav">
-                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
             </ul>
             <ul class="right-nav">
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="{% url 'register' %}">Register</a></li>
                 {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li><a href="{% url 'logout' %}" class="{% if request.path == '/auth/logout/' %}active{% endif %}">Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="{% if request.path == '/auth/login/' %}active{% endif %}">Login</a></li>
+                    <li><a href="{% url 'register' %}" class="{% if request.path == '/auth/register/' %}active{% endif %}">Register</a></li>
                 {% endif %}
             </ul>
-        </nav>
+        </nav>        
     </header>
 
     <div class="content">
