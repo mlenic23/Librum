@@ -1,35 +1,45 @@
 {% extends 'base.html' %}
 
+{% load static %}  
+
 {% block title %}Login{% endblock %}
 
 {% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        <label for="username">Username</label>
-        <input type="text" name="username" required><br>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-icon">
+               <!-- <img src="{% static 'photo/minibooks.png' %}" alt="Login Icon" />-->
+            </div>
+            <div class="login-form">
+                <h2>Login</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="input-group">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" required>
+                    </div>
 
-        <label for="password">Password</label>
-        <input type="password" name="password" required><br>
+                    <div class="input-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" required>
+                    </div>
 
-        <button type="submit">Submit</button>
-    </form>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </form>
 
-    <p>Do not have an account? <a href="{% url 'register' %}">Register here</a></p>
+                <p class="register-link">Do not have an account? <a href="{% url 'register' %}">Register here</a></p>
 
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-    {% if messages %}
-        <ul>
-            {% for message in messages %}
-                <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
+                {% if messages %}
+                    <div class="messages">
+                        <ul>
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endblock %}
