@@ -13,19 +13,28 @@
     <header>
         <nav>
             <ul class="left-nav">
-                <li><a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">Home</a></li>
+                <li>
+                    <a href="{% url 'home' %}" class="{% if request.path == '/' %}active{% endif %}">
+                        <img src="{% static 'photo/logo.png' %}" alt="Home" />
+                    </a>
+                </li>                
             </ul>
             <ul class="right-nav">
-                {% if user.is_authenticated %}
-                    <li><a href="{% url 'logout' %}" class="{% if request.path == '/auth/logout/' %}active{% endif %}">Logout</a></li>
-                {% else %}
-                    <li><a href="{% url 'login' %}" class="{% if request.path == '/auth/login/' %}active{% endif %}">Login</a></li>
-                    <li><a href="{% url 'register' %}" class="{% if request.path == '/auth/register/' %}active{% endif %}">Register</a></li>
-                {% endif %}
+                <li class="dropdown">
+                    <a href="javascript:void(0)" class="dropbtn">Account</a>
+                    <div class="dropdown-content">
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'logout' %}" class="{% if request.path == '/auth/logout/' %}active{% endif %}">Logout</a>
+                            <!-- Dodatne opcije kada je korisnik prijavljen -->
+                            <a href="#">Profil</a> <!-- Možeš dodati i druge opcije kao što je Profil -->
+                        {% else %}
+                            <a href="{% url 'login' %}" class="{% if request.path == '/auth/login/' %}active{% endif %}">Login</a>
+                        {% endif %}
+                    </div>
+                </li>
             </ul>
-        </nav>        
-    </header>
-
+        </nav>  
+    </header>      
     <div class="content">
         {% block content %}
         {% endblock %}

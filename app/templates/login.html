@@ -4,7 +4,15 @@
 
 {% block title %}Login{% endblock %}
 
+
 {% block content %}
+<div class="video-section">
+    <div class="video-background">
+        <video autoplay muted loop>
+            <source src="{% static 'video/books.mp4' %}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
     <div class="login-container">
         <div class="login-box">
             <div class="login-icon">
@@ -28,7 +36,8 @@
                     <button type="submit" class="submit-btn">Submit</button>
                 </form>
 
-                <p class="register-link">Do not have an account? <a href="{% url 'register' %}">Register here</a></p>
+                <p class="register-link">You still do not have an account? <a href="{% url 'register' %}"><br>
+                    Register here</a></p>
 
                 {% if messages %}
                     <div class="messages">
@@ -42,4 +51,5 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
