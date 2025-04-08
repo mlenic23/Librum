@@ -1,26 +1,25 @@
 *{
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap')
-    font-family: "Tajawal", sans-serif;
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
+    font-family: "Merriweather", serif;
     color:hsl(22, 29%, 61%);
 }
 html, body{
     height: 100%;
 }
 body {
-    font-family: 'Georgia', serif;  
     margin: 0;
     padding: 0;
     position: relative;
-    height: 100%;
+    background: transparent;
 }
 .video-background {
-    position: absolute; /* ili relative, ovisno o layoutu */
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
     z-index: -1;
+    overflow: hidden;
 }
 
 .video-background video {
@@ -28,6 +27,7 @@ body {
     height: 100%;
     object-fit: cover;
 }
+
 .video-section {
     position: relative;
     width: 100%;
@@ -43,15 +43,23 @@ ul {
     list-style-type: none;
 }
 
-header {
-    background-color: #d0bba9;  /* Bez prozirnosti */
-    padding:5px;
-}
 
 nav {
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10; 
+    background-color: rgba(194, 153, 121, 0.05);
+    border:1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4.9px);
+    -webkit-backdrop-filter: blur(4.5px);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    border:1px solid black;
 }
 
 .left-nav {
@@ -65,7 +73,7 @@ nav {
 .left-nav li a {
     color: #000000;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -86,7 +94,7 @@ nav {
 .right-nav li a {
     color: #000000;
     text-decoration: none;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -94,17 +102,8 @@ nav {
     color: #6e4b3a;  
 }
 
-/*footer {
-    text-align: center;
-    padding: 10px;
-    background-color: #6e4b3a;
-    color: #fff;
-    margin-top: 20px;
-}*/
-
 .title {
-    font-family: 'Libre Baskerville', serif;
-    font-size: 4rem;
+    font-size: 6rem;
     color: #4e3629;
     text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
     margin: 0;
@@ -112,8 +111,7 @@ nav {
 }
 
 .quote {
-    font-family: 'Courier New', Courier, monospace;
-    font-size: 14px;
+    font-size: 16px;
     color: #e7d7c9;
     margin-top: 2px;
     text-align: center;
@@ -151,13 +149,14 @@ nav {
     border:1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(4.9px);
     -webkit-backdrop-filter: blur(4.5px);
-    padding: 30px;
+    padding: 17px;
     align-items: center;
     justify-content: flex;
     border-radius: 10px; 
     width: 100%;
     max-width: 400px;
     text-align: center; 
+    margin-top:30px;
 }
 
 .login-icon {
@@ -197,7 +196,7 @@ nav {
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 10px;
-    font-size: 16px;
+    font-size: 18px;
     color:#6e4b3a;
 }
 
@@ -213,7 +212,7 @@ nav {
     color: #6e4b3a;
     border: none;
     border-radius: 35px;
-    font-size: 16px;
+    font-size: 18px;
     cursor: pointer;
 }
 
@@ -251,7 +250,7 @@ nav {
 
 .messages li {
     color: #d9534f;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 li a img {
@@ -262,13 +261,14 @@ li a img {
 }
 
 .dropdown .dropbtn {
-    font-size: 14px;
+    font-size: 16px;
     color: #000; 
     padding: 10px 15px; 
     border: 2px solid #c8b19e; 
     border-radius: 25px; 
     background-color: transparent; 
     transition: all 0.3s ease;
+    margin-right:10px;
 }
 
 .dropdown .dropbtn:hover {
@@ -304,7 +304,7 @@ li a img {
     padding: 12px 20px; 
     text-decoration: none;
     display: block;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500; 
     transition: background-color 0.3s ease, padding-left 0.3s ease; 
 }
@@ -313,3 +313,6 @@ li a img {
     padding-left: 30px; 
 }
 
+.content {
+    background: transparent;
+}
