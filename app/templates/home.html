@@ -3,16 +3,15 @@
 {% block title %}Početna Stranica{% endblock %}
 
 {% block content %}
-    {% load static %}
-
-    {% if user.is_authenticated %}
-    <div class="greeting">
-        <p>Pozdrav, {{ user.username }}!</p>
+<div class="home">
+    <div class="quote-section">
+        <blockquote class="quote">
+            “A good book is a friend<br>that never lets you down.”  
+        </blockquote>
+        <p class="quote-text">
+            Are you ready to meet your next best friend? 
+        </p>
+        <a href="/books" class="explore-btn">Explore Our Books</a>
     </div>
-    {% endif %}
-
-    <div class="video-overlay">
-        <h1 class="title">Librum</h1>
-        <p class="quote">"A room without books is like a body without a soul." </p>
-    </div>
+</div>
 {% endblock %}
