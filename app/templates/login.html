@@ -13,41 +13,41 @@
             Your browser does not support the video tag.
         </video>
     </div>
-    <div class="login-container">
-        <div class="login-box">
-            <div class="login-icon">
-               <!-- <img src="{% static 'photo/minibooks.png' %}" alt="Login Icon" />-->
-            </div>
-            <div class="login-form">
-                <h2>Login</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    <div class="input-group">
-                        <label for="username">Username</label>
-                        <input type="text" name="username" id="username" required>
+    <div class="login-container container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-sm-12 col-md-12 col-lg-12 mx-auto">
+                <div class="login-box">
+                    <div class="login-form">
+                        <h2>Login</h2>
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="input-group">
+                                <label for="username">Username</label>
+                                <input type="text" name="username" id="username" required>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="password">Password</label>
+                                <input type="password" name="password" id="password" required>
+                            </div>
+
+                            <button type="submit" class="submit-btn">Submit</button>
+                        </form>
+
+                        <p class="register-link">You still do not have an account? <a href="{% url 'register' %}"><br>
+                            Register here</a></p>
+
+                        {% if messages %}
+                            <div class="messages">
+                                <ul>
+                                    {% for message in messages %}
+                                        <li>{{ message }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
                     </div>
-
-                    <div class="input-group">
-                        <label for="password">Password</label>
-                        <input type="password" name="password" id="password" required>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Submit</button>
-                </form>
-
-                <p class="register-link">You still do not have an account? <a href="{% url 'register' %}"><br>
-                    Register here</a></p>
-
-                {% if messages %}
-                    <div class="messages">
-                        <ul>
-                            {% for message in messages %}
-                                <li>{{ message }}</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                {% endif %}
+                </div>
             </div>
         </div>
     </div>

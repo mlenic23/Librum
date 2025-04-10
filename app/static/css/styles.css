@@ -1,5 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Berkshire+Swash&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Pacifico&family=Slabo+27px&family=Tajawal:wght@200;300;400;500;700;800;900&family=Unbounded:wght@200..900&display=swap');
+
 *{
-    @import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
     font-family: "Merriweather", serif;
     color:hsl(22, 29%, 61%);
 }
@@ -12,6 +13,7 @@ body {
     position: relative;
     background: transparent;
 }
+
 .video-background {
     position: fixed;
     top: 0;
@@ -99,25 +101,6 @@ nav {
     color: #6e4b3a;  
 }
 
-.title {
-    font-size: 6rem;
-    color: #4e3629;
-    text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.6);
-    margin: 0;
-    letter-spacing: 2px;
-}
-
-.quote {
-    font-size: 16px;
-    color: #e7d7c9;
-    margin-top: 2px;
-    text-align: center;
-    opacity: 0.9;
-    letter-spacing: 1px;
-    z-index: 2;
-    position: relative;
-}
-
 .video-overlay {
     position: absolute;
     top: 50%;
@@ -145,7 +128,10 @@ nav {
     border:1px solid rgba(255, 255, 255, 0.18);
     backdrop-filter: blur(4.9px);
     -webkit-backdrop-filter: blur(4.5px);
-    padding: 17px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 50px;
+    padding-right: 50px;
     align-items: center;
     justify-content: flex;
     border-radius: 10px; 
@@ -153,15 +139,6 @@ nav {
     max-width: 400px;
     text-align: center; 
     margin-top:30px;
-}
-
-.login-icon {
-    margin-right: 20px; 
-}
-
-.login-icon img {
-    width: 50px; 
-    height: 50px;
 }
 
 .login-box h2 {
@@ -191,7 +168,6 @@ nav {
     width: 80%;
     padding: 10px;
     border: 1px solid #ddd;
-    border-radius: 10px;
     font-size: 18px;
     color:#6e4b3a;
 }
@@ -219,7 +195,7 @@ nav {
 
 .register-link {
     text-align: center;
-    margin-top: 15px;
+    margin-top: 20px;
 }
 
 .register-link a {
@@ -313,35 +289,36 @@ li a img {
 }
 
 .home{
-    background-image: url('/static/photo/home.png'); 
+    background-image: url('/static/photo/homepage.png'); 
     background-size: cover;
     background-position: center;
     height: 100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .quote-section {
-    padding: 20px;
     max-width: 700px;
-    margin:0px;
+    text-align: center;
+
 }
 
 .quote {
-    font-size: 1.8rem;
-    font-weight: 500;
+    font-family: "Berkshire Swash", serif;
+    font-weight: 400;
+    font-style: bold;
+    font-size: 2.5rem;
     color: #2e1f16;
-    margin-top:260px;
-    margin-left:110px;
-    padding:0px;
-    margin-bottom: 20px;
+    margin: 60px 0 20px 0;
     line-height: 1.5;
 }
 
 .quote-text {
-    font-size: 1.2rem;
+    font-size: 1rem;
     color: #6e4b3a;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     line-height: 1.6;
-    margin-left:215px;
 }
 
 .explore-btn {
@@ -354,11 +331,57 @@ li a img {
     text-decoration: none;
     border-radius: 35px;
     transition: background-color 0.3s ease;
-    margin-left:298px;
-    margin-top:12px;
 }
 
 .explore-btn:hover {
     background-color: #c8b19e;
     color: #6e4b3a;
+}
+
+/*Responsive*/
+@media (max-width: 991px) {
+    .navbar-nav .dropdown-content {
+        position: static;
+        box-shadow: none;
+        background-color: rgba(194, 153, 121, 0.9);
+        border-radius: 0;
+        width: 100%;
+        transform: none;
+    }
+    .navbar-nav .dropdown-content a {
+        padding: 10px 30px;
+    }
+    .left-nav li a img {
+        width: 100px; /* Slightly smaller logo on mobile */
+        height: auto;
+    }
+}
+
+@media (max-width: 767px) {
+    .quote {
+        font-size: 1.4rem;
+        margin-top: 150px;
+        margin-left: 0;
+    }
+    .quote-text {
+        font-size: 1rem;
+        margin-left: 0;
+    }
+    .explore-btn {
+        margin-left: 0;
+        padding: 10px 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .login-box {
+        padding: 10px;
+        max-width: 100%;
+    }
+    .input-group input {
+        width: 90%;
+    }
+    .submit-btn {
+        width: 70%;
+    }
 }
