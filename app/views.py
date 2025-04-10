@@ -4,6 +4,8 @@ from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
+from .models import Book
+from django.db.models import Q
 
 # Create your views here.
 
@@ -44,3 +46,19 @@ def clean_email(self):
     if User.objects.filter(email=email).exists():
         raise forms.ValidationError("Email is already in use.")
     return email
+
+def book_list(request):
+    books = Book.objects.all()
+    return render(request, 'book_list.html', {'books':books})
+
+def book_detail(request, book_id):
+    book = Book.object.get(id=book_id)
+    return render(request, 'book_detail.html', {'book':book})
+
+def book_list(request):
+    query = request.GET.get('q')
+    if query:
+        books = Book.objects.filter(Q(title__icontains=query) | Q(author__icontains=query))
+    else:
+        books = Book.objects.all()
+    return render(request, 'book_list.html', {'books':books})

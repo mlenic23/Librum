@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+<div class="book-detail">
+    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+    <h1>{{ book.title }}</h1>
+    <h3>by {{ book.author }}</h3>
+    <p>{{ book.description }}</p>
+
+    <h2>Leave a Review</h2>
+    <!-- Dodaj ovdje formu za recenzije (vidi dolje) -->
+
+</div>
+{% endblock %}

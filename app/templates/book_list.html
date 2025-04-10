@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Books{% endblock %}
+
+{% block content %}
+<div class="book-section">
+
+    <form method="GET" action="" class="search-form">
+        <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <div class="book-list">
+        {% for book in books %}
+            <div class="book-card">
+                <a href="{% url 'book_detail' book.id %}">
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover">
+                </a>
+                <h2>{{ book.title }}</h2>
+                <p>{{ book.author }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}
