@@ -23,8 +23,10 @@ class Book(models.Model):
     ]
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
+    description = models.TextField()
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
     cover_image = models.ImageField(upload_to='books/covers')
+
 
     def __str__(self):
         return self.title

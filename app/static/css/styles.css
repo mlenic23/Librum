@@ -578,4 +578,53 @@ li a img {
     color:#4a3b2c;
 }
 
+.add {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Podesi visinu na 100% visine preglednika */
+}
 
+.form-container {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 30px;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 600px; /* Postavi maksimalnu širinu */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.filter-button {
+    background-color: #946b57;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s ease;
+}
+
+.filter-button:hover {
+    background-color: #6e4b3a;
+}
+
+.add-book-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #946b57;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-size: 14px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    transition: 0.3s ease;
+    margin-left:80px;
+}
+
+.add-book-button:hover {
+    background-color: #6e4b3a;
+}

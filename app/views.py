@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, BookForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
@@ -76,3 +76,14 @@ def book_list(request):
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     return render(request, 'book_detail.html', {'book':book})
+
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('book_list')  
+    else:
+        form = BookForm()
+    
+    return render(request, 'add_book.html', {'form': form})

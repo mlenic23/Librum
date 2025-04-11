@@ -44,10 +44,13 @@
         </div>        
     
 
-    <div class="bookQuote">
-        <h2>"Too many books, not enough hours,<br><span style="display:block; padding-left: 30px;">but each one worth the read."</span></h2>
-    </div>
-</div>
+        <div class="bookQuote">
+            <h2>"Too many books, not enough hours,<br><span style="display:block; padding-left: 30px;">but each one worth the read."</span></h2>
+            {% if user.is_authenticated %}
+            <a href="{% url 'add_book' %}" class="add-book-button">+ Add New Book</a>
+            {% endif %}
+        </div>
+        </div>
 
     <div class="book-list">
         {% for book in books %}
