@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django import forms
 from .models import Book
 from django.db.models import Q
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 
@@ -48,17 +49,30 @@ def clean_email(self):
     return email
 
 def book_list(request):
+    query = request.GET.get('q')  # Parametar za pretragu
+    selected_genres = request.GET.getlist('genre')  # Lista selektovanih žanrova
+
     books = Book.objects.all()
-    return render(request, 'book_list.html', {'books':books})
+
+    if query:
+        books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
+    
+    if selected_genres:
+        genre_map = {display: value for value, display in Book.GENRE_CHOICES}
+        # Convert selected display genres to database values
+        db_genres = [genre_map.get(genre) for genre in selected_genres if genre in genre_map]
+        if db_genres:
+            books = books.filter(genre__in=db_genres)
+
+    # Get all genre display names for the filter form
+    all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
+
+    return render(request, 'book_list.html', {
+        'books': books, 
+        'genres': all_genres,
+        'selected_genres': selected_genres,
+    })
 
 def book_detail(request, book_id):
-    book = Book.object.get(id=book_id)
+    book = get_object_or_404(Book, id=book_id)
     return render(request, 'book_detail.html', {'book':book})
-
-def book_list(request):
-    query = request.GET.get('q')
-    if query:
-        books = Book.objects.filter(Q(title__icontains=query) | Q(author__icontains=query))
-    else:
-        books = Book.objects.all()
-    return render(request, 'book_list.html', {'books':books})

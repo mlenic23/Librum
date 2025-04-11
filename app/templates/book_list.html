@@ -3,12 +3,51 @@
 {% block title %}Books{% endblock %}
 
 {% block content %}
-<div class="book-section">
+<div class="book-section-flex">
+    <div class="left-panel">
+        <div class="search">
+            <div class="search-bar">
+                <form method="GET" action="" class="search-form">
+                    <input type="text" name="q" placeholder="Search..." value="{{ request.GET.q }}">
+                    <button type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
 
-    <form method="GET" action="" class="search-form">
-        <input type="text" name="q" placeholder="Search" value="{{ request.GET.q }}">
-        <button type="submit">Search</button>
-    </form>
+        <div class="filter-box">
+            <form method="GET" action="" class="genre-filter-form">
+                <label for="genres">Filter by genre:</label><br>
+                <div class="genre-columns">
+                    <div class="genre-column">
+                        {% for genre in genres|slice:":8" %}
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="{{ genre }}"
+                                {% if genre in selected_genres %}checked{% endif %}>
+                                {{ genre }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                    <div class="genre-column">
+                        {% for genre in genres|slice:"8:" %}
+                            <label class="genre-checkbox">
+                                <input type="checkbox" name="genre" value="{{ genre }}"
+                                {% if genre in selected_genres %}checked{% endif %}>
+                                {{ genre }}
+                            </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button type="submit" class="filter-button">Apply</button>
+            </form>
+        </div>        
+    
+
+    <div class="bookQuote">
+        <h2>"Too many books, not enough hours,<br><span style="display:block; padding-left: 30px;">but each one worth the read."</span></h2>
+    </div>
+</div>
 
     <div class="book-list">
         {% for book in books %}
@@ -21,6 +60,5 @@
             </div>
         {% endfor %}
     </div>
-
 </div>
 {% endblock %}
