@@ -62,6 +62,20 @@
                 <p>{{ book.author }}</p>
             </div>
         {% endfor %}
+
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Previous</a>
+            {% endif %}
+        
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Last</a>
+            {% endif %}
+        </div>
+               
+        
     </div>
 </div>
 {% endblock %}

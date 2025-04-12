@@ -628,3 +628,33 @@ li a img {
 .add-book-button:hover {
     background-color: #6e4b3a;
 }
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: nowrap; /* Ovo sprječava da dugmad pređu u drugi red */
+    margin: 30px auto 20px;
+}
+
+.pagination a {
+    padding: 10px 18px;
+    border-radius: 8px;
+    background-color: #3e2f26;
+    color: #f0e6dc;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    border: 1px solid #5a4537;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    white-space: nowrap; /* Sprečava da se tekst prelama u dva reda */
+}
+
+
+.pagination a:hover {
+    background-color: #5a4537;
+    color: #fffaf2;
+}
+
+

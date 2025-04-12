@@ -7,6 +7,7 @@ from django import forms
 from .models import Book
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -49,8 +50,8 @@ def clean_email(self):
     return email
 
 def book_list(request):
-    query = request.GET.get('q')  # Parametar za pretragu
-    selected_genres = request.GET.getlist('genre')  # Lista selektovanih žanrova
+    query = request.GET.get('q')  
+    selected_genres = request.GET.getlist('genre')  
 
     books = Book.objects.all()
 
@@ -59,16 +60,19 @@ def book_list(request):
     
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
-        # Convert selected display genres to database values
         db_genres = [genre_map.get(genre) for genre in selected_genres if genre in genre_map]
         if db_genres:
             books = books.filter(genre__in=db_genres)
 
-    # Get all genre display names for the filter form
+    paginator = Paginator(books, 8)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+   
     all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
 
     return render(request, 'book_list.html', {
-        'books': books, 
+        'books': page_obj.object_list, 
+        'page_obj':page_obj,
         'genres': all_genres,
         'selected_genres': selected_genres,
     })
