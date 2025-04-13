@@ -47,7 +47,7 @@
         <div class="bookQuote">
             <h2>"Too many books, not enough hours,<br><span style="display:block; padding-left: 30px;">but each one worth the read."</span></h2>
             {% if user.is_authenticated %}
-            <a href="{% url 'add_book' %}" class="add-book-button">+ Add New Book</a>
+            <button class="add-book-button" id="open-modal">+ Add New Book</button>
             {% endif %}
         </div>
         </div>
@@ -78,4 +78,58 @@
         
     </div>
 </div>
+
+<div id="modal-overlay" class="modal-overlay" style="display: none;"></div>
+
+<div id="book-modal" class="book-modal" style="display: none;">
+    <div class="modal-content">
+        <span id="close-modal" class="close-btn">&times;</span>
+        {% include 'books/_book_form.html' %}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const openModalButton = document.getElementById("open-modal");
+        const closeModalButton = document.getElementById("close-modal");
+        const modal = document.getElementById("book-modal");
+        const overlay = document.getElementById("modal-overlay");
+    
+        if (openModalButton) {
+            openModalButton.addEventListener("click", function () {
+                modal.style.display = "block";
+                overlay.style.display = "block";
+                document.body.classList.add("blurred");
+            });
+        }
+    
+        if (closeModalButton) {
+            closeModalButton.addEventListener("click", function () {
+                modal.style.display = "none";
+                overlay.style.display = "none";
+                document.body.classList.remove("blurred");
+            });
+        }
+    
+        if (overlay) {
+            overlay.addEventListener("click", function (event) {
+                if (event.target === overlay) { // Only close if clicking the overlay, not the modal
+                    modal.style.display = "none";
+                    overlay.style.display = "none";
+                    document.body.classList.remove("blurred");
+                }
+            });
+        }
+    
+        // Prevent modal from closing when clicking inside the form
+        const modalContent = document.querySelector(".modal-content");
+        if (modalContent) {
+            modalContent.addEventListener("click", function (event) {
+                event.stopPropagation();
+            });
+        }
+    });
+    </script>
 {% endblock %}
+
+

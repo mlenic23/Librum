@@ -52,7 +52,6 @@ def clean_email(self):
 def book_list(request):
     query = request.GET.get('q')  
     selected_genres = request.GET.getlist('genre')  
-
     books = Book.objects.all()
 
     if query:
@@ -70,11 +69,14 @@ def book_list(request):
    
     all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
 
+    form = BookForm()
+
     return render(request, 'book_list.html', {
         'books': page_obj.object_list, 
         'page_obj':page_obj,
         'genres': all_genres,
         'selected_genres': selected_genres,
+        'form':form,
     })
 
 def book_detail(request, book_id):
@@ -86,8 +88,13 @@ def add_book(request):
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('book_list')  
-    else:
-        form = BookForm()
-    
-    return render(request, 'add_book.html', {'form': form})
+            return redirect('book_list')
+        else:
+            # If form is invalid, re-render the page with errors
+            return render(request, 'book_list.html', {
+                'form': form,
+                'books': Book.objects.all(),
+                'genres': [genre[1] for genre in Book.GENRE_CHOICES],
+                'selected_genres': request.GET.getlist('genre'),
+            })
+    return redirect('book_list')
