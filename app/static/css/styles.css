@@ -661,191 +661,233 @@ li a img {
     color: #fffaf2;
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0,0,0,0.4);
-    z-index: 999;
-}
-
-.book-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1b1b1b;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-    z-index: 1000; /* Higher than overlay */
-    width: 90%;
-    max-width: 500px;
-    color: #e0d7c3;
-    font-family: 'Georgia', serif;
-    pointer-events: auto; /* Ensure modal is interactive */
-}
-
-.modal-content {
-    position: relative;
-    pointer-events: auto; /* Ensure content is interactive */
-}
-
-.close-btn {
+.favorite-btn {
     position: absolute;
     top: 10px;
-    right: 15px;
-    font-size: 1.5rem;
-    color: #e0d7c3;
-    cursor: pointer;
+    right: 10px;
 }
 
-.close-btn:hover {
-    color: #f4e6c1;
+.book-card {
+    position: relative; 
 }
 
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.4);
-    z-index: 999; /* Below modal */
-    pointer-events: auto;
-}
-
-#book-form input[type="text"],
-#book-form textarea,
-#book-form select,
-#book-form input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #5c483a;
-    border-radius: 8px;
-    background-color: #2a2a2a;
-    color: #f8f0e3;
-    font-size: 1rem;
-    font-family: 'Georgia', serif;
-    pointer-events: auto; /* Ensure inputs are interactive */
-}
-
-#book-form input[type="text"]:focus,
-#book-form textarea:focus,
-#book-form select:focus {
-    outline: none;
-    border-color: #a1896f;
-    background-color: #2f2f2f;
-}
-
-#book-form input[type="file"] {
-    background-color: transparent;
-    color: #d8cab3;
-}
-
-#book-form button[type="submit"] {
-    background-color: #a1896f;
-    color: #1b1b1b;
-    padding: 10px 20px;
+.favorite-btn button {
+    background: none;
     border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: bold;
+    font-size: 22px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-family: 'Georgia', serif;
+    transition: transform 0.2s ease;
 }
 
-#book-form button[type="submit"]:hover {
-    background-color: #c9b59a;
+.favorite-btn button:hover {
+    transform: scale(1.2);
+    color: #6e4b3a;
 }
 
-/* Center the submit button */
-.submit-button-container {
+.heart {
+    font-size: 24px;
+    color: gray;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    margin-left: 10px;
+  }
+  
+.heart.filled {
+    color: red;
+  }
+  
+.sort-box {
+    margin-bottom: 20px;
+}
+
+.sort-select {
+    padding: 8px 10px;
+    border-radius:30px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #fff;
+    color: #8b8b8b;
+    margin-right: 10px;
+}
+
+.book-details-flex{
+    background: beige;
+    padding: 20px;
+    box-sizing: border-box;
+    display:flex;
+    gap:40px;
+    align-items: flex-start;
+}
+
+
+.book-detail-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+}
+
+.book-detail-card {
     display: flex;
-    justify-content: center;
-    margin-top: 1.5rem; /* Space above the button */
+    gap: 40px;
+    margin-bottom: 40px;
+    background-color: #fff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
-/* Style the submit button (ensure it matches your design) */
-#book-form button[type="submit"] {
-    background-color: #a1896f;
-    color: #1b1b1b;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
+.book-detail-left img {
+    width: 250px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.book-detail-right {
+    flex: 1;
+}
+
+.book-title {
+    font-size: 2em;
+    margin-bottom: 10px;
+}
+
+.book-author {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.book-description {
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.book-genre {
     font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    font-family: 'Georgia', serif;
+    color: #444;
 }
 
-#book-form button[type="submit"]:hover {
-    background-color: #c9b59a;
+/* Review section */
+.reviews-display {
+    margin-top: 30px;
 }
 
-/* Move close button higher */
-.close-btn {
-    position: absolute;
-    top: -10px; /* Moved higher to avoid overlap with first input */
-    right: 15px;
-    font-size: 1.5rem;
-    color: #e0d7c3;
-    cursor: pointer;
+.single-review {
+    background-color: #f7f7f7;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.05);
 }
 
-.close-btn:hover {
-    color: #f4e6c1;
+.review-author {
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
-/* Ensure modal content doesn’t interfere */
-.book-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #1b1b1b;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
-    z-index: 1000;
-    width: 90%;
-    max-width: 500px;
-    color: #e0d7c3;
-    font-family: 'Georgia', serif;
-    pointer-events: auto;
+.review-date {
+    font-size: 0.8em;
+    color: #888;
 }
 
-/* Ensure form inputs are styled properly */
-#book-form input[type="text"],
-#book-form textarea,
-#book-form select,
-#book-form input[type="file"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 1rem;
-    border: 1px solid #5c483a;
-    border-radius: 8px;
-    background-color: #2a2a2a;
-    color: #f8f0e3;
-    font-size: 1rem;
-    font-family: 'Georgia', serif;
-    pointer-events: auto;
-}
-
-#book-form input[type="text"]:focus,
-#book-form textarea:focus,
-#book-form select:focus {
-    outline: none;
-    border-color: #a1896f;
-    background-color: #2f2f2f;
-}
-body.blurred .book-section-flex {
+/* Blur and modal effect */
+/* Blur kad je modal aktivan */
+body.modal-active #contentWrapper {
     filter: blur(5px);
     pointer-events: none;
+    user-select: none;
 }
 
+/* Modal overlay */
+.review-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0,0,0,0.6);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Aktivira prikaz */
+.review-modal.active {
+    display: flex;
+}
+
+/* Modal sadržaj */
+.review-modal-content {
+    background-color: black;
+    padding: 30px;
+    border-radius: 16px;
+    width: 500px;
+    max-width: 90%;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Zatvaranje X */
+.close-modal {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 1.4em;
+    cursor: pointer;
+    color: #666;
+}
+
+/* Animacija ulaska */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Gumb stil */
+.review-submit {
+    padding: 10px 20px;
+    background-color: #946b57;
+    color: white;
+    border: 2px solid black;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: 0.2s ease-in-out;
+}
+
+.review-submit:hover {
+    background-color: rgba(221, 188, 163, 0.9);
+}
+
+.close-modal {
+    position: absolute;
+    top: 12px;
+    right: 18px;
+    font-size: 1.4em;
+    cursor: pointer;
+    color: #946b57;
+}
+
+.form-container input,
+.form-container textarea,
+.form-container select {
+    background-color: black;
+    border: 1px solid #5a4537;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+.form-container label {
+    color: #c8b19e;
+    font-weight: bold;
+}
+
+.form-container textarea:focus,
+.form-container input:focus,
+.form-container select:focus {
+    outline: none;
+    border-color: #946b57;
+}

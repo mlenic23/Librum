@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import CustomUserCreationForm, BookForm
+from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book
+from .models import Book, Review
+from .forms import ReviewForm
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
@@ -49,19 +50,29 @@ def clean_email(self):
         raise forms.ValidationError("Email is already in use.")
     return email
 
+from django.db.models import Q
+from django.core.paginator import Paginator
+
 def book_list(request):
     query = request.GET.get('q')  
     selected_genres = request.GET.getlist('genre')  
+    sort = request.GET.get('sort')  
+
     books = Book.objects.all()
 
     if query:
         books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
-    
+
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
         db_genres = [genre_map.get(genre) for genre in selected_genres if genre in genre_map]
         if db_genres:
             books = books.filter(genre__in=db_genres)
+
+    if sort == 'asc':
+        books = books.order_by('title')
+    elif sort == 'desc':
+        books = books.order_by('-title')
 
     paginator = Paginator(books, 8)
     page_number = request.GET.get('page')
@@ -69,32 +80,35 @@ def book_list(request):
    
     all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
 
-    form = BookForm()
-
     return render(request, 'book_list.html', {
-        'books': page_obj.object_list, 
-        'page_obj':page_obj,
+        'books': page_obj.object_list,
+        'page_obj': page_obj,
         'genres': all_genres,
         'selected_genres': selected_genres,
-        'form':form,
+        'sort': sort,  
     })
+
 
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    return render(request, 'book_detail.html', {'book':book})
+    reviews = book.reviews.all().order_by('created_at')
 
-def add_book(request):
     if request.method == 'POST':
-        form = BookForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('book_list')
+        if request.user.is_authenticated:
+            form = ReviewForm(request.POST)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.user = request.user
+                review.book = book
+                review.save()
+                return redirect('book_detail', book_id=book.id)
         else:
-            # If form is invalid, re-render the page with errors
-            return render(request, 'book_list.html', {
-                'form': form,
-                'books': Book.objects.all(),
-                'genres': [genre[1] for genre in Book.GENRE_CHOICES],
-                'selected_genres': request.GET.getlist('genre'),
-            })
-    return redirect('book_list')
+            return redirect('login')
+    else:
+        form = ReviewForm()
+
+    return render(request, 'book_detail.html',{
+        'book':book,
+        'form':form,
+        'reviews':reviews,
+    })

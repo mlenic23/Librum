@@ -1,16 +1,62 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ book.title }}{% endblock %}
 
 {% block content %}
-<div class="book-detail">
-    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
-    <h1>{{ book.title }}</h1>
-    <h3>by {{ book.author }}</h3>
-    <p>{{ book.description }}</p>
+<!-- WRAPPER ZA SAV SADRŽAJ STRANICE -->
+<div class="book-details-flex">
+<div id="contentWrapper">
+    <div class="book-detail-container">
+        <div class="book-detail-card">
+            <div class="book-detail-left">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-detail-image">
+            </div>
+            <div class="book-detail-right">
+                <h1 class="book-title">{{ book.title }}</h1>
+                <h3 class="book-author">by {{ book.author }}</h3>
+                <p class="book-description">{{ book.description }}</p>
+                <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
+            </div>
+        </div>
 
-    <h2>Leave a Review</h2>
-    <!-- Dodaj ovdje formu za recenzije (vidi dolje) -->
+        <div class="review-section" style="text-align: center;">
+            {% if user.is_authenticated %}
+                <button class="review-submit" id="openReviewModal">Add Review</button>
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+            {% endif %}
+        </div>
 
+        <div class="reviews-display">
+            <h2>Reviews</h2>
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="single-review">
+                        <p class="review-author"><strong>{{ review.user.username }}</strong>:</p>
+                        <p class="review-content">{{ review.content }}</p>
+                        <p class="review-date">{{ review.created_at|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No reviews yet. Be the first!</p>
+            {% endif %}
+        </div>
+    </div>
 </div>
+
+<div class="review-modal" id="reviewModal">
+    <div class="review-modal-content">
+        <span class="close-modal" id="closeModal">&times;</span>
+        <h2 class="modal-title">Leave a Review</h2>
+        <form method="POST" action="" class="form-container">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="review-submit">Submit</button>
+        </form>
+    </div>
+</div>
+</div>
+<!-- JS -->
+<script src="{% static 'js/book_details.js' %}"></script>
 {% endblock %}

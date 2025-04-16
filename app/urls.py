@@ -9,5 +9,4 @@ urlpatterns = [
     path('register/', views.user_register, name='register'),
     path('books/', views.book_list, name='book_list'),
     path('books/<int:book_id>/', views.book_detail, name='book_detail'),
-    path('add-book/', views.add_book, name='add_book'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
