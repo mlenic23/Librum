@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib import admin
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -23,10 +24,12 @@ class Book(models.Model):
     ]
     title = models.CharField(max_length=200)
     author = models.CharField(max_length=100)
-    description = models.TextField()
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
     cover_image = models.ImageField(upload_to='books/covers')
-
+    number_of_pages = models.PositiveBigIntegerField(null=True, blank=True)
+    famous_quote = models.TextField(null=True, blank=True)
+    summary = models.TextField(null=True, blank=True)
+    facts = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return self.title

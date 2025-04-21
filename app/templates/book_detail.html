@@ -15,10 +15,16 @@
             <div class="book-detail-right">
                 <h1 class="book-title">{{ book.title }}</h1>
                 <h3 class="book-author">by {{ book.author }}</h3>
-                <p class="book-description">{{ book.description }}</p>
+                <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
                 <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
+                <button id="openSummaryModal" class="review-submit">Show summary</button>
             </div>
         </div>
+        {% if book.famous_quote %}
+                    <blockquote class="book-quote">
+                        “{{ book.famous_quote }}”
+                    </blockquote>
+                {% endif %}
 
         <div class="review-section" style="text-align: center;">
             {% if user.is_authenticated %}
@@ -45,6 +51,14 @@
     </div>
 </div>
 
+<div class="review-modal" id="summaryModal">
+    <div class="review-modal-content">
+        <span class="close-modal" id="closeSummaryModal">&times;</span>
+        <h2>{{book.title}} summary</h2>
+        <p>{{ book.summary }}</p>
+    </div>
+</div>
+
 <div class="review-modal" id="reviewModal">
     <div class="review-modal-content">
         <span class="close-modal" id="closeModal">&times;</span>
@@ -57,6 +71,6 @@
     </div>
 </div>
 </div>
-<!-- JS -->
+
 <script src="{% static 'js/book_details.js' %}"></script>
 {% endblock %}

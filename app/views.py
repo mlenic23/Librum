@@ -6,10 +6,11 @@ from django.contrib.auth.models import User
 from django import forms
 from .models import Book, Review
 from .forms import ReviewForm
+from django.utils.safestring import mark_safe
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-
+from django.contrib import admin
 # Create your views here.
 
 def home(request):
@@ -86,6 +87,7 @@ def book_list(request):
         'genres': all_genres,
         'selected_genres': selected_genres,
         'sort': sort,  
+
     })
 
 
@@ -112,3 +114,4 @@ def book_detail(request, book_id):
         'form':form,
         'reviews':reviews,
     })
+

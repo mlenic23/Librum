@@ -20,3 +20,27 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    const summaryModal = document.getElementById('summaryModal');
+    const openSummaryBtn = document.getElementById('openSummaryModal');
+    const closeSummaryBtn = document.getElementById('closeSummaryModal');
+
+    openSummaryBtn.addEventListener('click', function () {
+        summaryModal.classList.add('active');
+        document.body.classList.add('modal-active');
+    });
+
+    closeSummaryBtn.addEventListener('click', function () {
+        summaryModal.classList.remove('active');
+        document.body.classList.remove('modal-active');
+    });
+
+    window.addEventListener('click', function (e) {
+        if (e.target === summaryModal) {
+            summaryModal.classList.remove('active');
+            document.body.classList.remove('modal-active');
+        }
+    });
+});
+
