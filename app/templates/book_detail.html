@@ -14,7 +14,7 @@
             </div>
             <div class="book-detail-right">
                 <h1 class="book-title">{{ book.title }}</h1>
-                <h3 class="book-author">by {{ book.author }}</h3>
+                <h3 class="book-author">{{ book.author }}</h3>
                 <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
                 <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
                 <button id="openSummaryModal" class="review-submit">Show summary</button>
@@ -25,14 +25,6 @@
                         “{{ book.famous_quote }}”
                     </blockquote>
                 {% endif %}
-
-        <div class="review-section" style="text-align: center;">
-            {% if user.is_authenticated %}
-                <button class="review-submit" id="openReviewModal">Add Review</button>
-            {% else %}
-                <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
-            {% endif %}
-        </div>
 
         <div class="reviews-display">
             <h2>Reviews</h2>
@@ -48,13 +40,21 @@
                 <p>No reviews yet. Be the first!</p>
             {% endif %}
         </div>
+
+        <div class="review-section" style="text-align: center;">
+            {% if user.is_authenticated %}
+                <button class="review-submit" id="openReviewModal">Add Review</button>
+            {% else %}
+                <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 
 <div class="review-modal" id="summaryModal">
     <div class="review-modal-content">
         <span class="close-modal" id="closeSummaryModal">&times;</span>
-        <h2>{{book.title}} summary</h2>
+        <h2>{{book.title}}</h2>
         <p>{{ book.summary }}</p>
     </div>
 </div>
