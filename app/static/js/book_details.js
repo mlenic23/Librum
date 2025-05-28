@@ -44,3 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function submitRating() {
+    document.getElementById('ratingForm').submit();
+}

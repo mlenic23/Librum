@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib import admin
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 # Create your models here.
 class Book(models.Model):
@@ -29,16 +30,51 @@ class Book(models.Model):
     number_of_pages = models.PositiveBigIntegerField(null=True, blank=True)
     famous_quote = models.TextField(null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
-    facts = models.TextField(null=True, blank=True)
+    
 
     def __str__(self):
         return self.title
+    
+    def average_rating(self):
+        ratings = self.ratings.all()
+        if ratings:
+            return round(sum(r.rating for r in ratings) / ratings.count(), 1)
+        return 0
+
+    def user_rating(self, user):
+        rating = self.ratings.filter(user=user).first()
+        return rating.rating if rating else None
+    
+class BookRating(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='ratings')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.PositiveBigIntegerField()
+
+    class Meta:
+        unique_together = ('book', 'user')
+
+    def __str__(self):
+        return f"{self.user.username} rated {self.book.title} ({self.rating})"
+    
     
 class Review(models.Model):
     book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='reviews')
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
-
+    
     def __str__(self):
         return f"{self.user.username} on {self.book.title}"
+    
+    def total_likes(self):
+        return self.reviewlike_set.count()
+    
+    def is_liked_by(self,user):
+        return self.reviewlike_set.filter(user=user).exists()
+    
+class ReviewLike(models.Model):
+    review = models.ForeignKey(Review, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('review', 'user')

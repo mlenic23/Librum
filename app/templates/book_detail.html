@@ -20,11 +20,42 @@
                 <button id="openSummaryModal" class="review-submit">Show summary</button>
             </div>
         </div>
+
         {% if book.famous_quote %}
-                    <blockquote class="book-quote">
-                        “{{ book.famous_quote }}”
-                    </blockquote>
+            <blockquote class="book-quote">
+                “{{ book.famous_quote }}”
+            </blockquote>
+        {% endif %}
+
+        <!-- Sekcija za ocjenjivanje -->
+        <div class="rating-section">
+            <h2 class="rating-title">Rate This Book</h2>
+            <div class="rating-content">
+                {% if user.is_authenticated %}
+                    <form method="POST" id="ratingForm">
+                        {% csrf_token %}
+                        <div class="star-rating">
+                            {% for i in "54321" %}
+                                {% with i_int=i|add:0 %}
+                                    <input 
+                                        type="radio" 
+                                        id="star{{ i }}" 
+                                        name="rating" 
+                                        value="{{ i }}" 
+                                        onchange="submitRating()" 
+                                        {% if user_rating == i_int %}checked{% endif %}
+                                        {% if user_rating %}disabled{% endif %}>
+                                    <label for="star{{ i }}" title="{{ i }} stars">★</label>
+                                {% endwith %}
+                            {% endfor %}
+                        </div>
+                    </form>
+                {% else %}
+                    <p class="login-to-rate"><a href="{% url 'login' %}">Log in</a> to rate this book.</p>
                 {% endif %}
+                <p class="average-rating-text"><strong>Average Rating:</strong> <span class="average-rating">{{ book.average_rating }}</span>/5</p>
+            </div>
+        </div>
 
         <div class="reviews-display">
             <h2>Reviews</h2>
@@ -34,12 +65,19 @@
                         <p class="review-author"><strong>{{ review.user.username }}</strong>:</p>
                         <p class="review-content">{{ review.content }}</p>
                         <p class="review-date">{{ review.created_at|date:"F j, Y, g:i a" }}</p>
+
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'toggle_review_like' review.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="like-button">
+                                    {% if review.user_liked %}Unlike{% else %}Like{% endif %}
+                                </button>
+                                <span>{{ review.total_likes }} like(s)</span>
+                            </form>
+                        {% endif %}
                     </div>
-                {% endfor %}
-            {% else %}
-                <p>No reviews yet. Be the first!</p>
-            {% endif %}
-        </div>
+                    {% endfor %}
+                    {% endif %}
 
         <div class="review-section" style="text-align: center;">
             {% if user.is_authenticated %}
@@ -66,7 +104,7 @@
         <form method="POST" action="" class="form-container">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="review-submit">Submit</button>
+            <button type="submit" class="review-submit" name="review_submit">Submit</button>
         </form>
     </div>
 </div>

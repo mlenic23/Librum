@@ -1,17 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
-from .forms import CustomUserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review
-from .forms import ReviewForm
-from django.utils.safestring import mark_safe
+from .models import Book, Review, ReviewLike, BookRating
+from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
-from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from django.contrib import admin
-# Create your views here.
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 def home(request):
     return render(request, 'home.html')
@@ -27,7 +24,7 @@ def user_register(request):
             messages.error(request, 'Please fill out all registration fields!')
     else:
         form = CustomUserCreationForm()
-    return render(request, 'register.html', {'form':form})
+    return render(request, 'register.html', {'form': form})
 
 def user_login(request):
     if request.method == 'POST':
@@ -50,9 +47,6 @@ def clean_email(self):
     if User.objects.filter(email=email).exists():
         raise forms.ValidationError("Email is already in use.")
     return email
-
-from django.db.models import Q
-from django.core.paginator import Paginator
 
 def book_list(request):
     query = request.GET.get('q')  
@@ -87,31 +81,71 @@ def book_list(request):
         'genres': all_genres,
         'selected_genres': selected_genres,
         'sort': sort,  
-
     })
 
+from django.db.models import Avg
+from django.contrib.auth.decorators import login_required
 
+@login_required  # ako želiš da rating/review zahtijeva login
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    reviews = book.reviews.all().order_by('created_at')
+    reviews = book.reviews.all().order_by('-created_at')
+
+    # Označi koje recenzije je korisnik lajkao
+    for review in reviews:
+        review.user_liked = review.is_liked_by(request.user)
+
+    # Dohvati korisnikovu ocjenu, ako postoji
+    user_rating = None
+    existing_rating = BookRating.objects.filter(book=book, user=request.user).first()
+    if existing_rating:
+        user_rating = existing_rating.rating
+
+    # Inicijalni formovi
+    review_form = ReviewForm()
+    rating_form = RatingForm(initial={'rating': user_rating})
 
     if request.method == 'POST':
-        if request.user.is_authenticated:
-            form = ReviewForm(request.POST)
-            if form.is_valid():
-                review = form.save(commit=False)
-                review.user = request.user
-                review.book = book
-                review.save()
+        # Ako korisnik šalje ocjenu (bez gumba, preko JS ili onchange)
+        if 'rating' in request.POST and not existing_rating:
+            rating_form = RatingForm(request.POST)
+            if rating_form.is_valid():
+                rating_value = int(rating_form.cleaned_data['rating'])
+                BookRating.objects.create(
+                    book=book,
+                    user=request.user,
+                    rating=rating_value
+                )
+                avg_rating = BookRating.objects.filter(book=book).aggregate(Avg('rating'))['rating__avg']
+                book.average_rating = round(avg_rating, 2) if avg_rating else 0
+                book.save()
                 return redirect('book_detail', book_id=book.id)
-        else:
-            return redirect('login')
-    else:
-        form = ReviewForm()
+                # Dodavanje recenzije
+        if 'review_submit' in request.POST:
+                review_form = ReviewForm(request.POST)
+                if review_form.is_valid():
+                    review = review_form.save(commit=False)
+                    review.user = request.user
+                    review.book = book
+                    review.save()
+                    return redirect('book_detail', book_id=book.id)
 
-    return render(request, 'book_detail.html',{
-        'book':book,
-        'form':form,
-        'reviews':reviews,
+    return render(request, 'book_detail.html', {
+        'book': book,
+        'reviews': reviews,
+        'form': review_form,
+        'rating_form': rating_form,
+        'user_rating': user_rating,
+        'rating_range': [5, 4, 3, 2, 1],  # Dodano da znaš korisnikovu ocjenu u template-u
     })
+
+
+
+@login_required
+def toggle_review_like(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+    like, created = ReviewLike.objects.get_or_create(user=request.user, review=review)
+    if not created:
+        like.delete()
+    return redirect('book_detail', book_id=review.book.id)
 

@@ -9,4 +9,6 @@ urlpatterns = [
     path('register/', views.user_register, name='register'),
     path('books/', views.book_list, name='book_list'),
     path('books/<int:book_id>/', views.book_detail, name='book_detail'),
+    path('review/<int:review_id>/like/', views.toggle_review_like, name='toggle_review_like'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

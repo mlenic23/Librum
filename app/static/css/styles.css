@@ -710,7 +710,9 @@ li a img {
 }
 
 .book-details-flex {
-    background: linear-gradient(135deg, #f5f4f1 0%, #c8b19e 100%); /* Soft gradient background */
+    background: linear-gradient(135deg, rgba(245, 244, 241, 0.9) 0%, rgba(200, 177, 158, 0.9) 100%), url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background-size: cover, auto;
+    background-attachment: fixed, scroll;
     padding: 40px;
     box-sizing: border-box;
     display: flex;
@@ -720,122 +722,261 @@ li a img {
     gap: 40px;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+.book-details-flex::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(148, 107, 87, 0.2) 0%, transparent 70%);
 }
 
 
+
+/* Book Detail Container */
 .book-detail-container {
     max-width: 1000px;
     margin: 40px auto;
     padding: 30px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: "Merriweather", serif;
     position: relative;
+    z-index: 1;
 }
 
+/* Book Detail Card - Zadržan kreativni dizajn */
 .book-detail-card {
     display: flex;
     gap: 40px;
     margin-bottom: 40px;
-    background: linear-gradient(145deg, #ffffff, #f7f2ed);
+    background: linear-gradient(145deg, #ffffff, #f7f2ed, #e0d4c8);
     border-radius: 25px;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
-    border: 1px solid rgba(200, 177, 158, 0.3); 
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(148, 107, 87, 0.3);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .book-detail-card:hover {
-    transform: translateY(-5px); /* Slight lift on hover */
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+    transform: rotateX(5deg) translateY(-10px);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 0 30px rgba(148, 107, 87, 0.5);
 }
 
 .book-detail-left img {
     width: 220px;
     height: auto;
     border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow for the image */
-    transition: transform 0.3s ease;
+    box-shadow: 0 5px 15px rgba(74, 59, 44, 0.3);
+    transition: transform 0.5s ease, box-shadow 0.5s ease;
 }
 
 .book-detail-left img:hover {
-    transform: scale(1.03); /* Slight zoom on hover */
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 10px 30px rgba(74, 59, 44, 0.5);
 }
-
 
 .book-detail-right {
     flex: 1;
+    text-align: center;
 }
 
 .book-title {
-    font-family: "Berkshire Swash", serif; /* Elegant font for the title */
-    font-size: 2.5em;
-    color: #4a3b2c; /* Rich brown color */
-    margin-bottom: 15px;
-    line-height: 1.2;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow for depth */
+    font-family: "Berkshire Swash", serif;
+    font-size: 2.8em;
+    background: linear-gradient(90deg, #4a3b2c, #6e4b3a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from { text-shadow: 0 0 5px #4a3b2c; }
+    to { text-shadow: 0 0 20px #6e4b3a, 0 0 30px #946b57; }
 }
 
 .book-author {
-    font-size: 1.3em;
-    color: #6e4b3a; /* Muted brown */
-    margin-bottom: 40px;
-    font-style: italic;
+    font-size: 1.4em;
+    color: #6e4b3a;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
 }
 
-
 .book-pages, .book-genre {
-    font-size: 1.1em;
-    color: #5a4537; /* Slightly darker brown */
+    font-size: 1.2em;
+    color: #5a4537;
+    padding: 5px 10px;
+    border-bottom: 1px dashed #946b57;
     margin-bottom: 15px;
 }
 
-
+/* Book Quote - Pojednostavljen dizajn */
 .book-quote {
     font-family: "Pacifico", cursive;
-    font-size: 1.3em;
+    font-size: 1.4em;
     color: #4a3b2c;
-    margin: 30px 0;
     text-align: center;
-    font-style: italic;
+    padding: 15px 0;
+    border-top: 1px solid #946b57;
+    border-bottom: 1px solid #946b57;
+    margin: 30px 0;
 }
 
+/* Rating Section - Zadržan dizajn, uklonjena promjena boje na hover */
+.rating-section {
+    margin-top: 30px;
+    padding: 25px;
+    background: linear-gradient(135deg, rgba(194, 153, 121, 0.2), rgba(239, 212, 191, 0.2));
+    border-radius: 15px;
+    box-shadow: inset 0 0 20px rgba(148, 107, 87, 0.1);
+    position: relative;
+    overflow: hidden;
+}
 
-/* Review section */
-.review-submit {
-    padding: 12px 25px;
-    margin-top:40px;
-    background: linear-gradient(90deg, #946b57, #b88063); /* Gradient button */
-    color: #fff;
-    border: none;
-    border-radius: 35px;
+.rating-title {
+    font-family: "Berkshire Swash", serif;
+    font-size: 2.2em;
+    color: #4a3b2c;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(148, 107, 87, 0.3);
+    margin-bottom: 15px;
+}
+
+.rating-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.star-rating {
+    direction: rtl;
+    display: inline-flex;
+    gap: 5px;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    font-size: 2.2rem;
+    color: #e6d9c6;
     cursor: pointer;
-    font-size: 1em;
-    letter-spacing: 1px;
-    transition: background 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    animation: starPulse 1.5s infinite alternate;
 }
 
-.review-submit:hover {
-    background: linear-gradient(90deg, #b88063, #946b57); /* Reverse gradient on hover */
-    transform: scale(1.05); /* Slight scale on hover */
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+@keyframes starPulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
 }
 
+.star-rating input[type="radio"]:checked ~ label {
+    color: #d4af37;
+    text-shadow: 0 0 10px #d4af37;
+}
+
+.star-rating input[type="radio"]:disabled:checked ~ label {
+    color: #d4af37;
+}
+
+.average-rating-text {
+    font-family: "Merriweather", serif;
+    font-size: 1.2em;
+    color: #4a3b2c;
+    background: linear-gradient(90deg, #e0d4c8, #c8b19e);
+    padding: 10px 20px;
+    border-radius: 20px;
+}
+
+.average-rating {
+    font-weight: bold;
+    color: #4a3b2c;
+}
+
+.login-to-rate {
+    font-family: "Merriweather", serif;
+    font-size: 1.1em;
+    color: #946b57;
+    text-align: center;
+}
+
+.login-to-rate a {
+    color: #b88063;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.login-to-rate a:hover {
+    color: #6e4b3a;
+    text-decoration: underline;
+}
+
+/* Reviews Section */
 .reviews-display {
-    margin-top: 70px;
+    margin-top: 60px;
+    padding: 20px;
+    background: linear-gradient(135deg, #f9f6f3, #e0d4c8);
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.reviews-display h2 {
+    font-family: "Berkshire Swash", serif;
+    font-size: 2.2em;
+    color: #4a3b2c;
+    text-align: center;
+    text-shadow: 0 0 10px rgba(148, 107, 87, 0.3);
+    margin-bottom: 20px;
 }
 
 .single-review {
-    background: #f9f6f3;
-    border-radius: 12px;
+    position: relative;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 5px 15px rgba(74, 59, 44, 0.1);
+    overflow: hidden;
+}
+
+.single-review::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #946b57, #b88063);
+    animation: lineDraw 2s infinite;
+}
+
+@keyframes lineDraw {
+    0% { width: 0; }
+    100% { width: 100%; }
 }
 
 .review-author {
     font-weight: bold;
+    font-size: 1.2em;
     color: #4a3b2c;
     margin-bottom: 5px;
+}
+
+.review-content {
+    font-size: 1.1em;
+    color: #5a4537;
+    line-height: 1.6;
+    margin-bottom: 10px;
 }
 
 .review-date {
@@ -843,6 +984,58 @@ li a img {
     color: #888;
 }
 
+.like-button {
+    background: #946b57;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 15px;
+    transition: transform 0.3s ease;
+}
+
+.like-button:hover {
+    transform: scale(1.1);
+}
+
+/* Review Section */
+.review-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.review-section p {
+    font-family: "Merriweather", serif;
+    font-size: 1.1em;
+    color: #946b57;
+}
+
+.review-section p a {
+    color: #b88063;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.review-section p a:hover {
+    color: #6e4b3a;
+    text-decoration: underline;
+}
+
+/* Review Submit Button */
+.review-submit {
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #946b57, #b88063);
+    border-radius: 50px;
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.review-submit:hover {
+    box-shadow: 0 10px 25px rgba(148, 107, 87, 0.6);
+}
+
+/* Modal - Vraćen na stari dizajn */
 .review-modal {
     display: none;
     position: fixed;
@@ -869,6 +1062,11 @@ li a img {
     animation: fadeIn 0.3s ease;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 .close-modal {
     position: absolute;
     top: 12px;
@@ -876,11 +1074,11 @@ li a img {
     font-size: 1.4em;
     cursor: pointer;
     color: #946b57;
+    transition: color 0.3s ease;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+.close-modal:hover {
+    color: #b88063;
 }
 
 .form-container input,
@@ -905,3 +1103,4 @@ li a img {
     outline: none;
     border-color: #946b57;
 }
+
