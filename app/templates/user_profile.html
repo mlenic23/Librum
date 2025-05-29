@@ -10,12 +10,8 @@
         <div class="book">
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
-                <p>{{ book.title }}</p>
             </a>
-            <form method="POST" action="{% url 'toggle_favorite_book' book.id %}">
-                {% csrf_token %}
-                <button type="submit" class="action-btn">Remove from Favorites</button>
-            </form>
+
         </div>
         {% empty %}
         <p class="empty-shelf">No favorite books yet. Start adding some!</p>

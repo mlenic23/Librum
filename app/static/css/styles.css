@@ -100,6 +100,28 @@ nav {
     color: #6e4b3a;  
 }
 
+.right-nav li a img {
+    width: 40px; /* Maintain current size or adjust as needed */
+    height: 40px;
+    vertical-align: middle;
+    object-fit: contain; /* Ensure the image fits without distortion */
+    transition: transform 0.3s ease;
+}
+
+.right-nav li a:hover img {
+    transform: scale(1.1);
+}
+
+/* Adjust dropdown button to match image height */
+.right-nav .dropbtn {
+    padding: 10px 15px;
+    line-height: 40px; /* Match the image height */
+    border: 2px solid #c8b19e;
+    border-radius: 25px;
+    background-color: transparent;
+    transition: all 0.3s ease;
+    margin-right: 10px;
+}
 .video-overlay {
     position: absolute;
     top: 50%;
