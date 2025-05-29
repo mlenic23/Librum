@@ -1104,3 +1104,175 @@ li a img {
     border-color: #946b57;
 }
 
+/* static/css/bookshelf.css */
+@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Berkshire+Swash&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Pacifico&family=Slabo+27px&family=Tajawal:wght@200;300;400;500;700;800;900&family=Unbounded:wght@200..900&display=swap');
+
+.bookshelf-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 30px;
+    background: linear-gradient(135deg, rgba(245, 244, 241, 0.9), rgba(200, 177, 158, 0.9));
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(74, 59, 44, 0.3);
+    position: relative;
+    overflow: hidden;
+    font-family: "Merriweather", serif;
+    
+}
+
+.bookshelf-title {
+    font-family: "Berkshire Swash", serif;
+    font-size: 2.8em;
+    background: linear-gradient(90deg, #4a3b2c, #6e4b3a);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+    margin-top:40px;
+    text-shadow: 0 0 10px rgba(148, 107, 87, 0.3);
+    margin-bottom: 40px;
+    animation: titleGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes titleGlow {
+    from { text-shadow: 0 0 5px #4a3b2c; }
+    to { text-shadow: 0 0 20px #6e4b3a, 0 0 30px #946b57; }
+}
+
+.shelf-title {
+    font-family: "Pacifico", cursive;
+    font-size: 2.2em;
+    color: #4a3b2c;
+    text-align: center;
+    margin: 30px 0 20px;
+    border-bottom: 1px dashed #946b57;
+    padding-bottom: 10px;
+}
+
+.shelf {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: linear-gradient(180deg, #946b57, #6e4b3a); /* Wooden texture effect */
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 40px;
+    box-shadow: inset 0 0 15px rgba(74, 59, 44, 0.4), 0 5px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.shelf::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+    opacity: 0.2;
+    z-index: -1;
+}
+
+.book {
+    background: rgba(194, 153, 121, 0.1);
+    border: 1px solid #946b57;
+    border-radius: 10px;
+    padding: 15px;
+    width: 160px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform: rotate(2deg); /* Slight tilt for creative look */
+    animation: slideIn 0.5s ease forwards;
+    position: relative;
+}
+
+.book:nth-child(even) {
+    transform: rotate(-2deg); /* Alternate tilt for variety */
+}
+
+.book:hover {
+    transform: scale(1.1) rotate(0deg);
+    box-shadow: 0 10px 20px rgba(74, 59, 44, 0.5);
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-50px) rotate(2deg); opacity: 0; }
+    to { transform: translateX(0) rotate(2deg); opacity: 1; }
+}
+
+.book-cover {
+    width: 120px;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 5px 15px rgba(74, 59, 44, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.book:hover .book-cover {
+    transform: scale(1.05);
+}
+
+.book p {
+    font-family: "Merriweather", serif;
+    font-size: 14px;
+    color: #4a3b2c;
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: #5a4537;
+    margin: 5px 0;
+    font-style: italic;
+}
+
+.empty-shelf {
+    font-family: "Pacifico", cursive;
+    font-size: 1.2em;
+    color: #6e4b3a;
+    text-align: center;
+    width: 100%;
+    padding: 20px;
+    background: rgba(239, 212, 191, 0.3);
+    border-radius: 10px;
+}
+
+.action-btn {
+    background: linear-gradient(45deg, #946b57, #b88063);
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-family: "Merriweather", serif;
+    font-size: 12px;
+    margin-top: 8px;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.action-btn:hover {
+    box-shadow: 0 5px 15px rgba(148, 107, 87, 0.6);
+    transform: scale(1.05);
+}
+
+.progress-input {
+    width: 80px;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #946b57;
+    border-radius: 8px;
+    background-color: rgba(200, 177, 158, 0.2);
+    color: #4a3b2c;
+    font-family: "Merriweather", serif;
+    font-size: 12px;
+}
+
+.progress-input:focus {
+    outline: none;
+    border-color: #6e4b3a;
+    background-color: rgba(200, 177, 158, 0.4);
+}

@@ -10,5 +10,8 @@ urlpatterns = [
     path('books/', views.book_list, name='book_list'),
     path('books/<int:book_id>/', views.book_detail, name='book_detail'),
     path('review/<int:review_id>/like/', views.toggle_review_like, name='toggle_review_like'),
-
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    path('profile/', views.user_profile, name='user_profile'),
+    path('books/<int:book_id>/favorite/', views.toggle_favorite_book, name='toggle_favorite_book'),
+    path('books/<int:book_id>/mark-read/', views.mark_book_read, name='mark_book_read'),
+    path('books/<int:book_id>/progress/', views.update_reading_progress, name='update_reading_progress'),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

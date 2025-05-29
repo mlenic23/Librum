@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db.models import Avg
 
 # Create your models here.
+    
 class Book(models.Model):
     GENRE_CHOICES = [
         ('fantasy', 'Fantasy'),
@@ -78,3 +79,28 @@ class ReviewLike(models.Model):
 
     class Meta:
         unique_together = ('review', 'user')
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
+    read_books = models.ManyToManyField(Book, related_name='read_by', blank=True)
+
+    def __str__(self):
+        return f"{self.user.username}'s Profile"
+    
+class ReadingProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    pages_read = models.PositiveBigIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now = True)
+
+    class Meta:
+        unique_together = ('user', 'book')
+
+    def __str__(self):
+        return f"{self.user.username} progress on {self.book.title}: {self.pages_read} pages"
+
+    def progress_percentage(self):
+        if self.book.number_of_pages and self.book.number_of_pages > 0:
+            return round((self.pages_read / self.book.number_of_pages) * 100, 1)
+        return 0

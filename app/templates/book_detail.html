@@ -21,6 +21,13 @@
             </div>
         </div>
 
+        <div>
+        <a href="{% url 'toggle_favorite_book' book.id %}" class="action-btn">
+            {% if book in user.userprofile.favorite_books.all %}Remove from Favorites{% else %}Add to Favorites{% endif %}
+        </a>
+        <a href="{% url 'mark_book_read' book.id %}" class="action-btn">Mark as Read</a>
+    </div>
+
         {% if book.famous_quote %}
             <blockquote class="book-quote">
                 “{{ book.famous_quote }}”

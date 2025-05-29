@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReviewLike, BookRating
+from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -149,3 +149,60 @@ def toggle_review_like(request, review_id):
         like.delete()
     return redirect('book_detail', book_id=review.book.id)
 
+
+@login_required
+def user_profile(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    favorite_books = profile.favorite_books.all()
+    read_books = profile.read_books.all()
+    reading_progress = ReadingProgress.objects.filter(user=request.user)
+
+    return render(request, 'user_profile.html',{
+        'favorite_books':favorite_books,
+        'read_books':read_books,
+        'reading_progress':reading_progress
+    })
+
+@login_required
+def toggle_favorite_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if book in profile.favorite_books.all():
+        profile.favorite_books.remove(book)
+    else:
+        profile.favorite_books.add(book)
+    return redirect('user_profile')
+
+@login_required
+def mark_book_read(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if book not in profile.read_books.all():
+        profile.read_books.add(book)
+        # Optionally, mark full progress if marking as read
+        progress, created = ReadingProgress.objects.get_or_create(user=request.user, book=book)
+        if book.number_of_pages:
+            progress.pages_read = book.number_of_pages
+            progress.save()
+    return redirect('user_profile')
+
+@login_required
+def update_reading_progress(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    if request.method == 'POST':
+        pages_read = request.POST.get('pages_read')
+        try:
+            pages_read = int(pages_read)
+            if pages_read >= 0 and (not book.number_of_pages or pages_read <= book.number_of_pages):
+                progress, created = ReadingProgress.objects.get_or_create(user=request.user, book=book)
+                progress.pages_read = pages_read
+                progress.save()
+                if book.number_of_pages and pages_read == book.number_of_pages:
+                    profile, created = UserProfile.objects.get_or_create(user=request.user)
+                    profile.read_books.add(book)
+                return redirect('user_profile')
+            else:
+                messages.error(request, 'Invalid page number.')
+        except ValueError:
+            messages.error(request, 'Please enter a valid number.')
+    return redirect('user_profile')
