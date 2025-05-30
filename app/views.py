@@ -3,12 +3,13 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress
+from .models import Book, Review, ReviewLike, BookRating, UserProfile
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
-from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg
+
 
 def home(request):
     return render(request, 'home.html')
@@ -83,30 +84,23 @@ def book_list(request):
         'sort': sort,  
     })
 
-from django.db.models import Avg
-from django.contrib.auth.decorators import login_required
-
-@login_required  # ako želiš da rating/review zahtijeva login
+@login_required  
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     reviews = book.reviews.all().order_by('-created_at')
 
-    # Označi koje recenzije je korisnik lajkao
     for review in reviews:
         review.user_liked = review.is_liked_by(request.user)
 
-    # Dohvati korisnikovu ocjenu, ako postoji
     user_rating = None
     existing_rating = BookRating.objects.filter(book=book, user=request.user).first()
     if existing_rating:
         user_rating = existing_rating.rating
 
-    # Inicijalni formovi
     review_form = ReviewForm()
     rating_form = RatingForm(initial={'rating': user_rating})
 
     if request.method == 'POST':
-        # Ako korisnik šalje ocjenu (bez gumba, preko JS ili onchange)
         if 'rating' in request.POST and not existing_rating:
             rating_form = RatingForm(request.POST)
             if rating_form.is_valid():
@@ -120,7 +114,6 @@ def book_detail(request, book_id):
                 book.average_rating = round(avg_rating, 2) if avg_rating else 0
                 book.save()
                 return redirect('book_detail', book_id=book.id)
-                # Dodavanje recenzije
         if 'review_submit' in request.POST:
                 review_form = ReviewForm(request.POST)
                 if review_form.is_valid():
@@ -136,7 +129,7 @@ def book_detail(request, book_id):
         'form': review_form,
         'rating_form': rating_form,
         'user_rating': user_rating,
-        'rating_range': [5, 4, 3, 2, 1],  # Dodano da znaš korisnikovu ocjenu u template-u
+        'rating_range': [5, 4, 3, 2, 1],  
     })
 
 
@@ -155,12 +148,11 @@ def user_profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     favorite_books = profile.favorite_books.all()
     read_books = profile.read_books.all()
-    reading_progress = ReadingProgress.objects.filter(user=request.user)
 
     return render(request, 'user_profile.html',{
         'favorite_books':favorite_books,
         'read_books':read_books,
-        'reading_progress':reading_progress
+
     })
 
 @login_required
@@ -179,30 +171,5 @@ def mark_book_read(request, book_id):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     if book not in profile.read_books.all():
         profile.read_books.add(book)
-        # Optionally, mark full progress if marking as read
-        progress, created = ReadingProgress.objects.get_or_create(user=request.user, book=book)
-        if book.number_of_pages:
-            progress.pages_read = book.number_of_pages
-            progress.save()
     return redirect('user_profile')
 
-@login_required
-def update_reading_progress(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    if request.method == 'POST':
-        pages_read = request.POST.get('pages_read')
-        try:
-            pages_read = int(pages_read)
-            if pages_read >= 0 and (not book.number_of_pages or pages_read <= book.number_of_pages):
-                progress, created = ReadingProgress.objects.get_or_create(user=request.user, book=book)
-                progress.pages_read = pages_read
-                progress.save()
-                if book.number_of_pages and pages_read == book.number_of_pages:
-                    profile, created = UserProfile.objects.get_or_create(user=request.user)
-                    profile.read_books.add(book)
-                return redirect('user_profile')
-            else:
-                messages.error(request, 'Invalid page number.')
-        except ValueError:
-            messages.error(request, 'Please enter a valid number.')
-    return redirect('user_profile')

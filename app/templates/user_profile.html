@@ -3,7 +3,6 @@
 <div class="bookshelf-container">
     <h1 class="bookshelf-title">{{ user.username }}'s Bookshelf</h1>
 
-    <!-- Favorite Books Shelf -->
     <h2 class="shelf-title">Favorite Books</h2>
     <div class="shelf">
         {% for book in favorite_books %}
@@ -18,44 +17,16 @@
         {% endfor %}
     </div>
 
-    <!-- Read Books Shelf -->
     <h2 class="shelf-title">Read Books</h2>
     <div class="shelf">
         {% for book in read_books %}
         <div class="book">
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
-                <p>{{ book.title }}</p>
             </a>
         </div>
         {% empty %}
         <p class="empty-shelf">No books marked as read yet.</p>
-        {% endfor %}
-    </div>
-
-    <!-- Reading Progress Shelf -->
-    <h2 class="shelf-title">Reading Progress</h2>
-    <div class="shelf">
-        {% for progress in reading_progress %}
-        <div class="book">
-            <a href="{% url 'book_detail' progress.book.id %}">
-                <img src="{{ progress.book.cover_image.url }}" alt="{{ progress.book.title }} cover" class="book-cover">
-                <p>{{ progress.book.title }}</p>
-            </a>
-            <p class="progress-text">Pages Read: {{ progress.pages_read }} / {{ progress.book.number_of_pages|default:"N/A" }}</p>
-            <p class="progress-text">Progress: {{ progress.progress_percentage }}%</p>
-            <form method="POST" action="{% url 'update_reading_progress' progress.book.id %}">
-                {% csrf_token %}
-                <input type="number" name="pages_read" min="0" max="{{ progress.book.number_of_pages|default:1000 }}" value="{{ progress.pages_read }}" required class="progress-input">
-                <button type="submit" class="action-btn">Update Progress</button>
-            </form>
-            <form method="POST" action="{% url 'mark_book_read' progress.book.id %}">
-                {% csrf_token %}
-                <button type="submit" class="action-btn">Mark as Read</button>
-            </form>
-        </div>
-        {% empty %}
-        <p class="empty-shelf">No books in progress. Pick up a book!</p>
         {% endfor %}
     </div>
 </div>
