@@ -47,3 +47,23 @@ document.addEventListener('DOMContentLoaded', function () {
 function submitRating() {
     document.getElementById('ratingForm').submit();
 }
+
+document.querySelectorAll('.action-icon').forEach(icon => {
+    icon.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                this.classList.toggle('filled');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});

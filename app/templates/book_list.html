@@ -68,14 +68,7 @@
                     <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover">
                 </a>
                 <h2>{{ book.title }}</h2>
-                <p>{{ book.author }}</p>
-                {% if user.is_authenticated %}
-                <div class="favorite-btn">
-                    <button title="Dodaj u favorite">
-                        <span class="heart">&#9825;</span>
-                    </button>
-                </div>
-                {% endif %}                
+                <p>{{ book.author }}</p>             
             </div>
         {% endfor %}
 
@@ -95,7 +88,6 @@
     </div>
 </div>
 
-<script src="{% static 'js/book_list.js' %}"></script>
 {% endblock %}
 
 

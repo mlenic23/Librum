@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Merriweather:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, rgba(245, 244, 241, 0.9) 0%, rgba(200, 177, 158, 0.9) 100%), url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background-size: cover, auto;
+    background-attachment: fixed, scroll;
+    font-family: 'Roboto', sans-serif;
+    color: #3c2f2f;
+}
+
+.bookshelf-container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.bookshelf-title {
+    text-align: center;
+    color: #4e2f1a;
+    margin-bottom: 2.5rem;
+    font-size: 2.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shelf-title {
+    color: #6b4e31;
+    margin: 2rem 0 1rem 0;
+    font-family: 'Lora', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    border-bottom: 2px solid #c8b19e;
+    padding-bottom: 0.75rem;
+    text-transform: capitalize;
+}
+
+.shelf {
+    width: 100%;
+    height: 320px;
+    border-radius: 10px;
+    background: url('https://www.transparenttextures.com/patterns/wood-pattern.png'), #8e5631da;
+    background-size: auto, auto;
+    display: flex;
+    gap: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.book {
+    height: 100%;
+    width: 60px;
+    overflow: hidden;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #3c2f2f;
+    border: 2px solid #c8b19e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.book:hover {
+    width: 200px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.book-title {
+    position: absolute;
+    font-family: 'Lora', serif;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-90deg);
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    color: #f5f4f1;
+    letter-spacing: 0.12em;
+    font-weight: 700;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    z-index: 2;
+    background: rgba(78, 47, 26, 0.85);
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+}
+
+.book:hover .book-title {
+    transform: translate(-50%, -50%) rotate(0deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.book-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: scale(0.8);
+}
+
+.book:hover .book-cover {
+    opacity: 1;
+    transform: scale(0.8);
+    border-radius: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.empty-shelf {
+    color: #c8b19e;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 300;
+    height: 100%;
+    background: rgba(245, 244, 241, 0.2);
+    border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+    .bookshelf-container {
+        padding: 20px 10px;
+    }
+
+    .bookshelf-title {
+        font-size: 2.2rem;
+    }
+
+    .shelf-title {
+        font-size: 1.5rem;
+    }
+
+    .shelf {
+        height: 250px;
+        flex-direction: column;
+        gap: 8px;
+        background: url('https://www.transparenttextures.com/patterns/wood-pattern.png'), #4e2f1a;
+        background-size: auto, auto;
+        padding: 1rem;
+    }
+
+    .book {
+        height: 60px;
+        width: 100%;
+    }
+
+    .book:hover {
+        width: 160px;
+        height: 240px;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .book-title {
+        transform: translate(-50%, -50%) rotate(0deg);
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .book:hover .book-cover {
+        border-radius: 0;
+    }
+
+    .empty-shelf {
+        font-size: 1rem;
+    }
+}
+
+.recommendations-container {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 20px;
+    padding: 1.5rem;
+    background: rgba(245, 244, 241, 0.2);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+    overflow-x: auto;
+}
+
+.recommendation-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 160px;
+    transition: transform 0.3s ease;
+}
+
+.recommendation-item:hover {
+    transform: scale(1.1);
+}
+
+.recommendation-cover {
+    width: 160px;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.recommendation-title {
+    color: #f5f4f1;
+    font-family: 'Lora', serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 8px;
+    padding: 5px 10px;
+    background: rgba(78, 47, 26, 0.85);
+    border-radius: 4px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.empty-shelf {
+    color: #c8b19e;
+    font-style: italic;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 300;
+    min-height: 100px;
+    background: rgba(245, 244, 241, 0.3);
+    border-radius: 8px;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+@media (max-width: 768px) {
+    .bookshelf-container {
+        padding: 20px 10px;
+    }
+
+    .bookshelf-title {
+        font-size: 2.2rem;
+    }
+
+    .shelf-title {
+        font-size: 1.5rem;
+    }
+
+    .shelf {
+        height: 250px;
+        flex-direction: column;
+        gap: 8px;
+        background: url('https://www.transparenttextures.com/patterns/purty-wood.png') #8b6f47;
+        background-size: auto, auto;
+        padding: 1rem;
+    }
+
+    .book {
+        height: 60px;
+        width: 100%;
+    }
+
+    .book:hover {
+        height: 180px;
+        width: 100%;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .book-title {
+        transform: translate(-50%, -50%) rotate(0deg);
+        font-size: 0.9rem;
+        padding: 0.6rem 1.1rem;
+        font-family: 'Lora', serif;
+    }
+
+    .book:hover .book-cover {
+        border-radius: 0;
+    }
+
+    .recommendations-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 1rem;
+        overflow-x: visible;
+    }
+
+    .recommendation-item {
+        width: 140px;
+    }
+
+    .recommendation-cover {
+        width: 140px;
+        height: 210px;
+    }
+
+    .recommendation-title {
+        font-size: 0.85rem;
+        margin-top: 6px;
+        padding: 4px 8px;
+    }
+
+    .empty-shelf {
+        font-size: 1rem;
+        min-height: 80px;
+    }
+}

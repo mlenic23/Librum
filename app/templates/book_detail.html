@@ -17,15 +17,21 @@
                 <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
                 <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
                 <button id="openSummaryModal" class="review-submit">Show summary</button>
+                <div class="action-icons">
+                    <a href="{% url 'toggle_favorite_book' book.id %}" class="action-icon favorite-icon {% if book in user.userprofile.favorite_books.all %}filled{% endif %}" title="Add to Favorites">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                        </svg>
+                    </a>
+                    <a href="{% url 'mark_book_read' book.id %}" class="action-icon read-icon {% if book in user.userprofile.read_books.all %}filled{% endif %}" title="Mark as Read">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                    </a>
+        </div>
             </div>
         </div>
-
-        <div>
-        <a href="{% url 'toggle_favorite_book' book.id %}" class="action-btn">
-            {% if book in user.userprofile.favorite_books.all %}Remove from Favorites{% else %}Add to Favorites{% endif %}
-        </a>
-        <a href="{% url 'mark_book_read' book.id %}" class="action-btn">Mark as Read</a>
-    </div>
+        
 
         {% if book.famous_quote %}
             <blockquote class="book-quote">

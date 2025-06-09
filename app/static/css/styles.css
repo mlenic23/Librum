@@ -740,12 +740,16 @@ li a img {
     align-items: center;
     min-height: 100vh;
     gap: 40px;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100vw;
+    margin: 0;
     position: relative;
     overflow: hidden;
 }
 
+.book-detail-container {
+    max-width: 1400px; /* Wider content area, but not unlimited */
+    width: 100%;
+}
 .book-details-flex::before {
     content: '';
     position: absolute;
@@ -1287,3 +1291,31 @@ li a img {
         height: 150px;
     }
 }}
+
+.action-icons {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.action-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.action-icon .icon {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: #000;
+    stroke-width: 2;
+    transition: fill 0.3s ease;
+}
+
+.action-icon.filled .icon {
+    stroke: #ff0000;
+}

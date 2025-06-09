@@ -9,6 +9,7 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg
+from django.db.models import Count
 
 
 def home(request):
@@ -149,9 +150,24 @@ def user_profile(request):
     favorite_books = profile.favorite_books.all()
     read_books = profile.read_books.all()
 
+    top_genre = read_books.values('genre') \
+                      .annotate(count=Count('genre')) \
+                      .order_by('-count') \
+                      .first()
+
+    if top_genre:
+        recommended_books = Book.objects.filter(
+            genre=top_genre['genre']
+        ).exclude(
+            id__in=read_books.values_list('id', flat=True)
+        )[:5]
+    else:
+        recommended_books = Book.objects.none()
+
     return render(request, 'user_profile.html',{
         'favorite_books':favorite_books,
         'read_books':read_books,
+        'recommended_books':recommended_books,
 
     })
 

@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/bookshelf.css' %}">
+</head>
+
 <div class="bookshelf-container">
     <h1 class="bookshelf-title">{{ user.username }}'s Bookshelf</h1>
 
@@ -7,26 +13,41 @@
     <div class="shelf">
         {% for book in favorite_books %}
         <div class="book">
+            <div class="book-title">{{ book.title }}</div>
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
             </a>
-
         </div>
         {% empty %}
         <p class="empty-shelf">No favorite books yet. Start adding some!</p>
         {% endfor %}
     </div>
 
-    <h2 class="shelf-title">Read Books</h2>
+    <h2 class="shelf-title">Books Read</h2>
     <div class="shelf">
         {% for book in read_books %}
         <div class="book">
+            <div class="book-title">{{ book.title }}</div>
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
             </a>
         </div>
         {% empty %}
         <p class="empty-shelf">No books marked as read yet.</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="shelf-title">Recommended Books</h2>
+    <div class="shelf recommendations-shelf">
+        {% for book in recommended_books %}
+        <div class="book recommendation-book">
+            <a href="{% url 'book_detail' book.id %}">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover recommendation-cover">
+            </a>
+            <div class="book-title recommendation-title">{{ book.title }}</div>
+        </div>
+        {% empty %}
+        <p class="empty-shelf">No recommendations available. Read some books to get suggestions!</p>
         {% endfor %}
     </div>
 </div>
