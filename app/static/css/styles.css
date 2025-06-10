@@ -405,7 +405,6 @@ li a img {
     }
 }
 
-/*book_list*/
 .book-section-flex {
     background: linear-gradient(90deg, #946b57, #b88063, #cfa38d, rgba(221, 188, 163, 0.9), rgba(239, 212, 191, 0.9));
     min-height: 100vh;
@@ -747,7 +746,7 @@ li a img {
 }
 
 .book-detail-container {
-    max-width: 1400px; /* Wider content area, but not unlimited */
+    max-width: 1400px; 
     width: 100%;
 }
 .book-details-flex::before {
@@ -1124,7 +1123,7 @@ li a img {
     max-width: 1200px;
     margin: auto;
     padding: 20px;
-    background: transparent; /* Remove window-like gradient */
+    background: transparent; 
     font-family: "Merriweather", serif;
 }
 
