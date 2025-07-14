@@ -3,14 +3,16 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReviewLike, BookRating, UserProfile
+from .models import Book, Review, ReadingLog, ReviewLike, BookRating, UserProfile
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg
-from django.db.models import Count
-
+from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+from django.db.models import Avg, Sum, Count
+from datetime import date
 
 def home(request):
     return render(request, 'home.html')
@@ -116,13 +118,13 @@ def book_detail(request, book_id):
                 book.save()
                 return redirect('book_detail', book_id=book.id)
         if 'review_submit' in request.POST:
-                review_form = ReviewForm(request.POST)
-                if review_form.is_valid():
-                    review = review_form.save(commit=False)
-                    review.user = request.user
-                    review.book = book
-                    review.save()
-                    return redirect('book_detail', book_id=book.id)
+            review_form = ReviewForm(request.POST)
+            if review_form.is_valid():
+                review = review_form.save(commit=False)
+                review.user = request.user
+                review.book = book
+                review.save()
+                return redirect('book_detail', book_id=book.id)
 
     return render(request, 'book_detail.html', {
         'book': book,
@@ -133,8 +135,6 @@ def book_detail(request, book_id):
         'rating_range': [5, 4, 3, 2, 1],  
     })
 
-
-
 @login_required
 def toggle_review_like(request, review_id):
     review = get_object_or_404(Review, id=review_id)
@@ -143,32 +143,45 @@ def toggle_review_like(request, review_id):
         like.delete()
     return redirect('book_detail', book_id=review.book.id)
 
-
 @login_required
 def user_profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     favorite_books = profile.favorite_books.all()
     read_books = profile.read_books.all()
+    recommended_books = recommend_books_knn(request.user)
+    # Dohvaćanje knjiga koje se trenutno čitaju (sve osim označenih kao pročitane danas)
+    currently_reading = ReadingLog.objects.filter(user=request.user).exclude(book__in=read_books).values('book').distinct()
 
-    top_genre = read_books.values('genre') \
-                      .annotate(count=Count('genre')) \
-                      .order_by('-count') \
-                      .first()
+    total_pages = profile.read_books.aggregate(total=Sum('number_of_pages'))['total'] or 0
+    genre_counts = profile.read_books.values('genre').annotate(count=Count('id')).order_by('-count').first()
+    top_genre = genre_counts['genre'] if genre_counts else 'N/A'
+    author_counts = profile.read_books.values('author').annotate(count=Count('id')).order_by('-count').first()
+    top_author = author_counts['author'] if author_counts else 'N/A'
+    pages_today = ReadingLog.objects.filter(user=request.user, date=date.today()).aggregate(total=Sum('pages'))['total'] or 0
 
-    if top_genre:
-        recommended_books = Book.objects.filter(
-            genre=top_genre['genre']
-        ).exclude(
-            id__in=read_books.values_list('id', flat=True)
-        )[:5]
-    else:
-        recommended_books = Book.objects.none()
+    if request.method == 'POST':
+        book_id = request.POST.get('book_id')
+        pages = request.POST.get('pages')
+        if book_id and pages:
+            book = get_object_or_404(Book, id=book_id)
+            pages = int(pages)
+            if pages > book.number_of_pages:
+                pages = book.number_of_pages
+            reading_log, created = ReadingLog.objects.get_or_create(user=request.user, book=book)
+            reading_log.pages = pages
+            reading_log.save()
+            return redirect('user_profile')
 
-    return render(request, 'user_profile.html',{
-        'favorite_books':favorite_books,
-        'read_books':read_books,
-        'recommended_books':recommended_books,
-
+    return render(request, 'user_profile.html', {
+        'favorite_books': favorite_books,
+        'read_books': read_books,
+        'recommended_books': recommended_books,
+        'currently_reading': currently_reading,
+        'total_pages': total_pages,
+        'genre_counts': genre_counts,
+        'top_genre': top_genre,
+        'top_author': top_author,
+        'pages_today': pages_today,
     })
 
 @login_required
@@ -183,9 +196,75 @@ def toggle_favorite_book(request, book_id):
 
 @login_required
 def mark_book_read(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    if book not in profile.read_books.all():
-        profile.read_books.add(book)
+    if request.method == "POST":
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        book = get_object_or_404(Book, id=book_id)
+        if book not in user_profile.read_books.all():
+            user_profile.read_books.add(book)
+            pages = request.POST.get('pages')
+            if pages:
+                pages = int(pages)
+                if pages > book.number_of_pages:
+                    pages = book.number_of_pages
+            else:
+                pages = book.number_of_pages
+            ReadingLog.objects.create(user=request.user, book=book, pages=pages, date=date.today())
+        return redirect('user_profile')
     return redirect('user_profile')
 
+@login_required
+def add_to_currently_reading(request, book_id):
+    if request.method == "POST":
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        book = get_object_or_404(Book, id=book_id)
+        if book not in user_profile.read_books.all():  # Spriječavanje dupliciranja ako je već pročitana
+            ReadingLog.objects.get_or_create(user=request.user, book=book, defaults={'pages': 0})
+        return redirect('user_profile')
+    return redirect('book_detail', book_id=book_id)
+
+def recommend_books_knn(user, n_recommendations=5):
+    books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages')
+    books_df = pd.DataFrame(books)
+
+    books_df['average_rating'] = [Book.objects.get(id=book_id).average_rating() for book_id in books_df['id']]
+
+    genre_encoder = LabelEncoder()
+    author_encoder = LabelEncoder()
+    
+    books_df['genre_encoded'] = genre_encoder.fit_transform(books_df['genre'])
+    books_df['author_encoded'] = author_encoder.fit_transform(books_df['author'])
+    books_df['average_rating'] = books_df['average_rating'].fillna(books_df['average_rating'].mean())
+    books_df['number_of_pages'] = books_df['number_of_pages'].fillna(books_df['number_of_pages'].mean())
+
+    features = books_df[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating']].values
+
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        read_books = user_profile.read_books.values_list('id', flat=True)
+    except UserProfile.DoesNotExist:
+        read_books = []
+    read_books_ids = set(read_books)
+
+    if not read_books:
+        return Book.objects.all().order_by('?')[:n_recommendations]
+
+    read_books_data = books_df[books_df['id'].isin(read_books_ids)]
+    read_books_features = read_books_data[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating']].values
+    total_samples = len(books_df)
+    n_neighbors = min(n_recommendations + len(read_books_ids), total_samples)
+
+    knn = NearestNeighbors(n_neighbors=n_neighbors, metric='cosine')
+    knn.fit(features)
+
+    recommendations = set()
+    for book_features in read_books_features:
+        distances, indices = knn.kneighbors([book_features])
+        for idx in indices[0]:
+            book_id = books_df.iloc[idx]['id']
+            if book_id not in read_books_ids:
+                recommendations.add(book_id)
+    if len(recommendations) < n_recommendations:
+        extra_books = Book.objects.exclude(id__in=read_books_ids).exclude(id__in=recommendations).order_by('?')[:n_recommendations - len(recommendations)]
+        recommendations.update(extra_books.values_list('id', flat=True))
+    recommended_books = Book.objects.filter(id__in=list(recommendations)[:n_recommendations])
+    return recommended_books

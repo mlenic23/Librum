@@ -28,10 +28,15 @@
                             <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
                         </svg>
                     </a>
-        </div>
+                    <form method="post" action="{% url 'add_to_currently_reading' book.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="action-icon currently-reading-icon {% if book in currently_reading %}filled{% endif %}" title="Add to Currently Reading">
+                                <img src="{% static 'photo/open-book.png' %}" alt="Read" class="icon">
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-        
 
         {% if book.famous_quote %}
             <blockquote class="book-quote">
@@ -87,30 +92,33 @@
                             </form>
                         {% endif %}
                     </div>
-                    {% endfor %}
-                    {% endif %}
-
-        <div class="review-section" style="text-align: center;">
-            {% if user.is_authenticated %}
-                <button class="review-submit" id="openReviewModal">Add Review</button>
+                {% endfor %}
             {% else %}
-                <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+                <p>No reviews yet.</p>
             {% endif %}
+
+            <div class="review-section" style="text-align: center;">
+                {% if user.is_authenticated %}
+                    <button class="review-submit" id="openReviewModal">Add Review</button>
+                {% else %}
+                    <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
 <div class="review-modal" id="summaryModal">
     <div class="review-modal-content">
-        <span class="close-modal" id="closeSummaryModal">&times;</span>
-        <h2>{{book.title}}</h2>
+        <span class="close-modal" id="closeSummaryModal">×</span>
+        <h2>{{ book.title }}</h2>
         <p>{{ book.summary }}</p>
     </div>
 </div>
 
 <div class="review-modal" id="reviewModal">
     <div class="review-modal-content">
-        <span class="close-modal" id="closeModal">&times;</span>
+        <span class="close-modal" id="closeModal">×</span>
         <h2 class="modal-title">Leave a Review</h2>
         <form method="POST" action="" class="form-container">
             {% csrf_token %}

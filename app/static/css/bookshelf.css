@@ -258,3 +258,62 @@ body {
         min-height: 80px;
     }
 }
+
+.main-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 2.5rem;
+}
+
+.user-profile-section {
+    flex: 1;
+    padding: 25px;
+    background-color: #af6436d2;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+    max-width: 400px;
+}
+
+.user-profile-section:hover {
+    transform: translateY(-5px);
+}
+
+.user-info h3 {
+    margin: 0 0 15px 0;
+    color: #f5f4f1;
+    font-size: 1.8rem;
+    font-family: 'Merriweather', serif;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.user-info p {
+    margin: 8px 0;
+    color: #f5f4f1;
+    font-size: 1rem;
+    line-height: 1.4;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.chart-section {
+    flex: 1;
+    padding: 20px;
+    background: rgba(245, 244, 241, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    min-height: 200px;
+}
+
+.chart-title {
+    color: #4e2f1a;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    font-family: 'Merriweather', serif;
+    text-align: center;
+}
+
+#pagesChart {
+    max-width: 100%;
+    height: auto !important;
+}
