@@ -2,10 +2,8 @@
 {% block content %}
 {% load static %}
 
-<head>
-    <link rel="stylesheet" href="{% static 'css/bookshelf.css' %}">
-    <script src="{% static 'js/profileStat.js' %}"></script>
-</head>
+<link rel="stylesheet" href="{% static 'css/bookshelf.css' %}">
+
 
 <div class="bookshelf-container">
 
@@ -26,32 +24,24 @@
             <canvas id="pagesChart" width="400" height="200"></canvas>
         </div>
     </div>
-    <h1 class="bookshelf-title">{{ user.username }}'s Bookshelf</h1>
+    <h1 class="bookshelf-title">{{ request.user.username }}'s Bookshelf</h1>
 
-   <h2 class="shelf-title">Currently Reading</h2>
+    <h2 class="shelf-title">Currently Reading</h2>
     <div class="shelf">
-        {% for reading in currently_reading %}
-            {% with book=reading.book %}
-            <div class="book">
-                <div class="book-title">{{ book.title }}</div>
-                <a href="{% url 'book_detail' book.id %}">
-                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
-                </a>
-                <form method="post" action="{% url 'user_profile' %}" class="book-actions">
-                    {% csrf_token %}
-                    <input type="hidden" name="book_id" value="{{ book.id }}">
-                    <input type="number" name="pages" min="0" max="{{ book.number_of_pages }}" placeholder="Pages read" required class="pages-input" value="{{ reading.pages }}">
-                    <button type="submit" class="action-btn">Update</button>
-                </form>
-            </div>
-            {% endwith %}
+        {% for book in currently_reading_books %}
+        <div class="book">
+            <div class="book-title">{{ book.title }}</div>
+            <a href="{% url 'book_detail' book.id %}">
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
+            </a>
+        </div>
         {% empty %}
             <p class="empty-shelf">
-                <img src="{% static 'images/book-placeholder.png' %}" alt="Empty shelf" class="empty-shelf-icon">
                 No books currently reading. Add some from book details!
             </p>
         {% endfor %}
     </div>
+    
 
     <h2 class="shelf-title">Favorite Books</h2>
     <div class="shelf">
@@ -61,13 +51,9 @@
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
             </a>
-            <div class="book-actions">
-                <a href="{% url 'toggle_favorite_book' book.id %}" class="action-btn">Remove from Favorites</a>
-            </div>
         </div>
         {% empty %}
         <p class="empty-shelf">
-            <img src="{% static 'images/book-placeholder.png' %}" alt="Empty shelf" class="empty-shelf-icon">
             No favorite books yet. Start adding some!
         </p>
         {% endfor %}
@@ -81,13 +67,9 @@
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
             </a>
-            <div class="book-actions">
-                <a href="{% url 'mark_book_read' book.id %}" class="action-btn">Mark as Unread</a>
-            </div>
         </div>
         {% empty %}
         <p class="empty-shelf">
-            <img src="{% static 'images/book-placeholder.png' %}" alt="Empty shelf" class="empty-shelf-icon">
             No books marked as read yet.
         </p>
         {% endfor %}
@@ -100,8 +82,6 @@
             <a href="{% url 'book_detail' book.id %}">
                 <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover recommendation-cover">
             </a>
-            <div class="recommendation-title">{{ book.title }}</div>
-            <div class="rating">Rating: {{ book.average_rating|default:"N/A" }}</div>
         </div>
         {% empty %}
         <p class="empty-shelf">No recommendations available. Read some books to get suggestions!</p>
@@ -109,5 +89,5 @@
     </div>
 </div>
 
-<script src="{% static 'js/pages_chart.js' %}"></script>
+<script src="{% static 'js/profileStat.js' %}"></script>
 {% endblock %}

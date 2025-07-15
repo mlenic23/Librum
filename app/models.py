@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Avg
 
 # Create your models here.
     
@@ -34,11 +35,11 @@ class Book(models.Model):
     def __str__(self):
         return self.title
     
+
     def average_rating(self):
-        ratings = self.ratings.all()
-        if ratings:
-            return round(sum(r.rating for r in ratings) / ratings.count(), 1)
-        return 0
+        avg = self.ratings.aggregate(Avg('rating'))['rating__avg']
+        return round(avg, 1) if avg is not None else 0
+
 
     def user_rating(self, user):
         rating = self.ratings.filter(user=user).first()
@@ -82,15 +83,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
     read_books = models.ManyToManyField(Book, related_name='read_by', blank=True)
+    currently_reading_books = models.ManyToManyField(Book, related_name="currently_reading_by", blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
-
-class ReadingLog(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    pages = models.PositiveIntegerField(default=0)  # Broj pročitanih stranica za dan
-    date = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.user.username} - {self.book.title} ({self.date})"

@@ -58,46 +58,18 @@ document.querySelectorAll('.action-icon').forEach(icon => {
                 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
             },
         })
-        .then(response => response.json())
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url; // Prati redirect
+            } else {
+                return response.json();
+            }
+        })
         .then(data => {
-            if (data.status === 'success') {
+            if (data && data.status === 'success') {
                 this.classList.toggle('filled');
             }
         })
         .catch(error => console.error('Error:', error));
     });
-});
-
-document.addEventListener('DOMContentLoaded', function() {
-    const currentlyReadingForm = document.querySelector('form[action^="/add_to_currently_reading/"]');
-    if (currentlyReadingForm) {
-        currentlyReadingForm.addEventListener('submit', function(e) {
-            e.preventDefault(); 
-
-            const bookId = currentlyReadingForm.action.split('/').pop();
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            fetch(`/add_to_currently_reading/${bookId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                    'X-CSRFToken': csrfToken,
-                },
-                body: `csrfmiddlewaretoken=${csrfToken}`
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Book added to Currently Reading!');
-                    window.location.href = '/auth/profile/'; // Preusmjeravanje na profil
-                } else {
-                    alert(data.error || 'Failed to add book.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred. Check console for details.');
-            });
-        });
-    }
 });

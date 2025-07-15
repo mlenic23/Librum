@@ -41,6 +41,7 @@ body {
     text-transform: capitalize;
 }
 
+
 .shelf {
     width: 100%;
     height: 320px;
@@ -316,4 +317,96 @@ body {
 #pagesChart {
     max-width: 100%;
     height: auto !important;
+}
+
+/* Add to existing CSS */
+.book-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.book-actions-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pages-input {
+    width: 80px;
+    padding: 5px;
+    border: 1px solid #c8b19e;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.action-btn {
+    background-color: #4e2f1a;
+    color: #f5f4f1;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: #6b4e31;
+}
+
+.info-btn {
+    background-color: #af6436;
+    margin-bottom: 10px;
+}
+
+.info-btn:hover {
+    background-color: #c8b19e;
+}
+
+.reading-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: auto;
+}
+
+.reading-modal-content {
+    background-color: #f5f4f1;
+    margin: 10% auto;
+    padding: 20px;
+    border: 1px solid #c8b19e;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.close-modal {
+    color: #4e2f1a;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    color: #6b4e31;
+}
+
+.reading-modal-content h2 {
+    color: #4e2f1a;
+    font-family: 'Merriweather', serif;
+    margin-bottom: 15px;
+}
+
+.reading-modal-content p {
+    color: #3c2f2f;
+    margin: 10px 0;
 }

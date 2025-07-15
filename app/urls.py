@@ -13,5 +13,5 @@ urlpatterns = [
     path('profile/', views.user_profile, name='user_profile'),
     path('books/<int:book_id>/favorite/', views.toggle_favorite_book, name='toggle_favorite_book'),
     path('books/<int:book_id>/mark-read/', views.mark_book_read, name='mark_book_read'),
-    path('add_to_currently_reading/<int:book_id>/', views.add_to_currently_reading, name='add_to_currently_reading'),
+    path('books/<int:book_id>/currently-reading/', views.currently_reading_books, name='currently_reading_books'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

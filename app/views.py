@@ -3,15 +3,17 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReadingLog, ReviewLike, BookRating, UserProfile
+from .models import Book, Review, ReviewLike, BookRating, UserProfile
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import LabelEncoder
+from django.http import JsonResponse
 import pandas as pd
 from django.db.models import Avg, Sum, Count
+from django.utils import timezone
 from datetime import date
 
 def home(request):
@@ -91,6 +93,7 @@ def book_list(request):
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     reviews = book.reviews.all().order_by('-created_at')
+    user_profile = get_object_or_404(UserProfile, user=request.user)
 
     for review in reviews:
         review.user_liked = review.is_liked_by(request.user)
@@ -147,51 +150,35 @@ def toggle_review_like(request, review_id):
 def user_profile(request):
     profile, created = UserProfile.objects.get_or_create(user=request.user)
     favorite_books = profile.favorite_books.all()
+    currently_reading_books = profile.currently_reading_books.all()
     read_books = profile.read_books.all()
     recommended_books = recommend_books_knn(request.user)
-    # Dohvaćanje knjiga koje se trenutno čitaju (sve osim označenih kao pročitane danas)
-    currently_reading = ReadingLog.objects.filter(user=request.user).exclude(book__in=read_books).values('book').distinct()
-
     total_pages = profile.read_books.aggregate(total=Sum('number_of_pages'))['total'] or 0
     genre_counts = profile.read_books.values('genre').annotate(count=Count('id')).order_by('-count').first()
     top_genre = genre_counts['genre'] if genre_counts else 'N/A'
     author_counts = profile.read_books.values('author').annotate(count=Count('id')).order_by('-count').first()
     top_author = author_counts['author'] if author_counts else 'N/A'
-    pages_today = ReadingLog.objects.filter(user=request.user, date=date.today()).aggregate(total=Sum('pages'))['total'] or 0
 
-    if request.method == 'POST':
-        book_id = request.POST.get('book_id')
-        pages = request.POST.get('pages')
-        if book_id and pages:
-            book = get_object_or_404(Book, id=book_id)
-            pages = int(pages)
-            if pages > book.number_of_pages:
-                pages = book.number_of_pages
-            reading_log, created = ReadingLog.objects.get_or_create(user=request.user, book=book)
-            reading_log.pages = pages
-            reading_log.save()
-            return redirect('user_profile')
 
     return render(request, 'user_profile.html', {
         'favorite_books': favorite_books,
         'read_books': read_books,
         'recommended_books': recommended_books,
-        'currently_reading': currently_reading,
         'total_pages': total_pages,
         'genre_counts': genre_counts,
         'top_genre': top_genre,
         'top_author': top_author,
-        'pages_today': pages_today,
+        'currently_reading_books':currently_reading_books,
     })
 
 @login_required
 def toggle_favorite_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
-    if book in profile.favorite_books.all():
-        profile.favorite_books.remove(book)
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+    if book in user_profile.favorite_books.all():
+        user_profile.favorite_books.remove(book)
     else:
-        profile.favorite_books.add(book)
+        user_profile.favorite_books.add(book)
     return redirect('user_profile')
 
 @login_required
@@ -201,26 +188,21 @@ def mark_book_read(request, book_id):
         book = get_object_or_404(Book, id=book_id)
         if book not in user_profile.read_books.all():
             user_profile.read_books.add(book)
-            pages = request.POST.get('pages')
-            if pages:
-                pages = int(pages)
-                if pages > book.number_of_pages:
-                    pages = book.number_of_pages
-            else:
-                pages = book.number_of_pages
-            ReadingLog.objects.create(user=request.user, book=book, pages=pages, date=date.today())
         return redirect('user_profile')
     return redirect('user_profile')
 
 @login_required
-def add_to_currently_reading(request, book_id):
+def currently_reading_books(request, book_id):
     if request.method == "POST":
+        book = get_object_or_404(Book, id = book_id)
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        book = get_object_or_404(Book, id=book_id)
-        if book not in user_profile.read_books.all():  # Spriječavanje dupliciranja ako je već pročitana
-            ReadingLog.objects.get_or_create(user=request.user, book=book, defaults={'pages': 0})
+        if book in user_profile.currently_reading_books.all():
+            user_profile.currently_reading_books.remove(book)
+        else:
+            user_profile.currently_reading_books.add(book)
         return redirect('user_profile')
-    return redirect('book_detail', book_id=book_id)
+    return redirect('user_profile')
+
 
 def recommend_books_knn(user, n_recommendations=5):
     books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages')
