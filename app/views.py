@@ -209,43 +209,60 @@ def log_reading_progress(request, book_id):
     if request.method == 'POST':
         book = get_object_or_404(Book, id=book_id)
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        data = json.loads(request.body)
-        pages_read = int(data.get('pages_read', 0))
+        
+        try:
+            pages_read = int(request.POST.get('pages_read', 0))
+        except (ValueError, TypeError):
+            messages.error(request, 'Invalid number of pages')
+            return redirect('user_profile')
 
         if pages_read < 0:
-            return JsonResponse({'status':'error', 'message':'Pages read cannot be negative'})
-        
+            messages.error(request, 'Pages read cannot be negative')
+            return redirect('user_profile')
+
         ReadingProgress.objects.create(
-            user = request.user,
-            book = book, 
-            pages_read = pages_read,
-            date = timezone.now().date()
+            user=request.user,
+            book=book,
+            pages_read=pages_read,
+            date=timezone.now().date()
         )
 
+
         total_pages_read = ReadingProgress.objects.filter(user=request.user, book=book).aggregate(total=Sum('pages_read'))['total'] or 0
-        response_data = {
-            'status': 'success',
-            'progress': list(ReadingProgress.objects.filter(user=request.user, book=book).values('date', 'pages_read').order_by('date')),
-            'total_pages': book.number_of_pages
-        }
 
-        if total_pages_read >= book.number_of_pages and book in user_profile.currently_reading_books.all():
-            user_profile.currently_reading_books.remove(book)
-            user_profile.read_books.add(book)
-            response_data['book_completed'] = True
+        if total_pages_read >= book.number_of_pages:
+            if book in user_profile.currently_reading_books.all():
+                user_profile.currently_reading_books.remove(book)
+                user_profile.read_books.add(book)
+            messages.success(request, f'Book "{book.title}" completed!')
 
-        return JsonResponse(response_data)
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+        else:
+            messages.success(request, f'Logged {pages_read} pages for "{book.title}".')
+
+        return redirect('user_profile')
+    return redirect('user_profile')
 
 @login_required
-def get_reading_progress(request, book_id):
-    book = get_object_or_404(Book, id=book_id)
-    progress = ReadingProgress.objects.filter(user=request.user, book=book).values('date', 'pages_read').order_by('date')
-    return JsonResponse({
-        'progress': list(progress),
-        'total_pages': book.number_of_pages
-    })
-
+def reading_progress_chart_data(request, book_id):
+    user = request.user
+    progress_qs = ReadingProgress.objects.filter(user=user, book_id=book_id).values('date', 'pages_read')
+    
+    # Pretvori u DataFrame
+    df = pd.DataFrame(list(progress_qs))
+    
+    if df.empty:
+        return JsonResponse({'dates': [], 'pages': []})
+    
+    # Grupiraj po datumu i zbroji
+    df['date'] = pd.to_datetime(df['date']).dt.date
+    df_grouped = df.groupby('date').sum().reset_index()
+    df_grouped = df_grouped.sort_values('date')
+    
+    # Formatiraj datume kao stringove
+    dates = df_grouped['date'].dt.strftime('%Y-%m-%d').tolist()
+    pages = df_grouped['pages_read'].tolist()
+    
+    return JsonResponse({'dates': dates, 'pages': pages})
 
 def recommend_books_knn(user, n_recommendations=5):
     books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages')

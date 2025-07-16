@@ -1,98 +1,75 @@
-let readingChart = null;
+function openReadingModal(bookId, bookTitle, numberOfPages) {
+    document.getElementById("modalBookTitle").innerText = bookTitle;
+    document.getElementById("modalBookId").value = bookId;
+    document.getElementById("pagesRead").max = numberOfPages;
 
-function openReadingModal(bookId, bookTitle, totalPages) {
-    document.getElementById('modalBookId').value = bookId;
-    document.getElementById('modalBookTitle').innerText = bookTitle;
-    document.getElementById('readingModal').style.display = 'block';
-
-    fetch(`/books/${bookId}/progress-data/`)
-        .then(res => res.json())
-        .then(data => updateReadingProgressChart(data.progress, totalPages))
-        .catch(err => console.error('Progress fetch error:', err));
+    fetchAndRenderChart(bookId);
+    document.getElementById("readingModal").style.display = "block";
 }
 
 function closeReadingModal() {
-    document.getElementById('readingModal').style.display = 'none';
-    if (readingChart) {
-        readingChart.destroy();
-        readingChart = null;
-    }
+    document.getElementById("readingModal").style.display = "none";
 }
 
-function updateReadingProgressChart(progressData, totalPages) {
-    const ctx = document.getElementById('readingProgressChart').getContext('2d');
-    if (readingChart) readingChart.destroy();
+function fetchAndRenderChart(bookId) {
+    fetch(`/auth/books/${bookId}/progress-chart-data/?t=${Date.now()}`)
+        .then(response => response.json())
+        .then(data => {
+            const ctx = document.getElementById('pagesChart').getContext('2d');
 
-    const labels = progressData.map(e => e.date);
-    const data = progressData.map(e => e.pages_read);
-    const total = data.reduce((a, b) => a + b, 0);
-
-    readingChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels,
-            datasets: [{
-                label: 'Pages Read',
-                data,
-                borderColor: 'rgba(75,192,192,1)',
-                fill: false
-            }]
-        },
-        options: {
-            scales: {
-                y: { beginAtZero: true, max: totalPages, title: { display: true, text: 'Pages' } },
-                x: { title: { display: true, text: 'Date' } }
-            },
-            plugins: {
-                title: {
-                    display: true,
-                    text: `Reading Progress (${total}/${totalPages} pages)`
-                }
+            if (window.myChart) {
+                window.myChart.destroy();
             }
-        }
-    });
+
+            window.myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.dates,
+                    datasets: [{
+                        label: 'Pages read per day',
+                        data: data.pages,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Pages Read'
+                            }
+                        }
+                    }
+                }
+            });
+        });
 }
 
-document.getElementById('readingProgressForm').addEventListener('submit', e => {
+// AJAX za slanje napretka bez reload-a
+document.getElementById('readingProgressForm').addEventListener('submit', function(e) {
     e.preventDefault();
+
     const bookId = document.getElementById('modalBookId').value;
     const pagesRead = document.getElementById('pagesRead').value;
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    fetch(`/books/${bookId}/log-progress/`, {
+    fetch(`/auth/books/${bookId}/log-progress/`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken')
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
         },
-        body: JSON.stringify({ pages_read: pagesRead })
+        body: `pages_read=${pagesRead}&book_id=${bookId}`
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-            if (data.book_completed) {
-                alert('Book completed!');
-                window.location.reload();
-            } else {
-                updateReadingProgressChart(data.progress, data.total_pages);
-            }
+    .then(response => {
+        if (response.ok) {
+            fetchAndRenderChart(bookId);
+            document.getElementById('pagesRead').value = '';
         } else {
-            alert('Error: ' + data.message);
+            alert('Error logging progress.');
         }
-    })
-    .catch(err => console.error('Submit error:', err));
-});
-
-function getCookie(name) {
-    let cookieValue = null;
-    document.cookie.split(';').forEach(cookie => {
-        const [k, v] = cookie.trim().split('=');
-        if (k === name) cookieValue = decodeURIComponent(v);
     });
-    return cookieValue;
-}
-
-window.onclick = function(event) {
-    if (event.target === document.getElementById('readingModal')) {
-        closeReadingModal();
-    }
-};
+});
