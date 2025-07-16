@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Avg
+from django.utils import timezone
 
 # Create your models here.
     
@@ -87,3 +88,15 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+
+class ReadingProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    pages_read = models.PositiveIntegerField()
+    date = models.DateField(default = timezone.now)
+
+    class Meta:
+        unique_together = ('user', 'book', 'date')
+    
+    def __str__(self):
+        return f"{self.user.username} read {self.pages_read} pages of {self.book.title} on {self.date}"

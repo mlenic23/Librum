@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReviewLike, BookRating, UserProfile
+from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -15,6 +15,7 @@ import pandas as pd
 from django.db.models import Avg, Sum, Count
 from django.utils import timezone
 from datetime import date
+from sklearn.preprocessing import LabelEncoder
 
 def home(request):
     return render(request, 'home.html')
@@ -202,6 +203,48 @@ def currently_reading_books(request, book_id):
             user_profile.currently_reading_books.add(book)
         return redirect('user_profile')
     return redirect('user_profile')
+
+@login_required
+def log_reading_progress(request, book_id):
+    if request.method == 'POST':
+        book = get_object_or_404(Book, id=book_id)
+        user_profile = get_object_or_404(UserProfile, user=request.user)
+        data = json.loads(request.body)
+        pages_read = int(data.get('pages_read', 0))
+
+        if pages_read < 0:
+            return JsonResponse({'status':'error', 'message':'Pages read cannot be negative'})
+        
+        ReadingProgress.objects.create(
+            user = request.user,
+            book = book, 
+            pages_read = pages_read,
+            date = timezone.now().date()
+        )
+
+        total_pages_read = ReadingProgress.objects.filter(user=request.user, book=book).aggregate(total=Sum('pages_read'))['total'] or 0
+        response_data = {
+            'status': 'success',
+            'progress': list(ReadingProgress.objects.filter(user=request.user, book=book).values('date', 'pages_read').order_by('date')),
+            'total_pages': book.number_of_pages
+        }
+
+        if total_pages_read >= book.number_of_pages and book in user_profile.currently_reading_books.all():
+            user_profile.currently_reading_books.remove(book)
+            user_profile.read_books.add(book)
+            response_data['book_completed'] = True
+
+        return JsonResponse(response_data)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+@login_required
+def get_reading_progress(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    progress = ReadingProgress.objects.filter(user=request.user, book=book).values('date', 'pages_read').order_by('date')
+    return JsonResponse({
+        'progress': list(progress),
+        'total_pages': book.number_of_pages
+    })
 
 
 def recommend_books_knn(user, n_recommendations=5):

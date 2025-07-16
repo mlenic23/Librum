@@ -3,6 +3,7 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'css/bookshelf.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
 <div class="bookshelf-container">
@@ -29,10 +30,14 @@
     <h2 class="shelf-title">Currently Reading</h2>
     <div class="shelf">
         {% for book in currently_reading_books %}
-        <div class="book">
+        <div class="book" data-book-id="{{ book.id }}" onclick="openReadingModal('{{ book.id }}', '{{ book.title }}', '{{ book.number_of_pages }}')">
             <div class="book-title">{{ book.title }}</div>
-            <a href="{% url 'book_detail' book.id %}">
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
+            <a href="javascript:void(0);">
+                {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
+                {% else %}
+                    <img src="{% static 'images/default_book_cover.jpg' %}" alt="Default cover" class="book-cover">
+                {% endif %}
             </a>
         </div>
         {% empty %}
@@ -40,6 +45,20 @@
                 No books currently reading. Add some from book details!
             </p>
         {% endfor %}
+    </div>
+
+    <div id="readingModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeReadingModal()">×</span>
+            <h2 id="modalBookTitle"></h2>
+            <form id="readingProgressForm">
+                <input type="hidden" id="modalBookId">
+                <label for="pagesRead">Pages read today:</label>
+                <input type="number" id="pagesRead" name="pages_read" min="0" required>
+                <button type="submit">Log Pages</button>
+            </form>
+            <canvas id="readingProgressChart" width="400" height="200"></canvas>
+        </div>
     </div>
     
 
@@ -90,4 +109,5 @@
 </div>
 
 <script src="{% static 'js/profileStat.js' %}"></script>
+<script src="{% static 'js/readingProgress.js' %}"></script>
 {% endblock %}

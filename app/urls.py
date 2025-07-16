@@ -14,4 +14,6 @@ urlpatterns = [
     path('books/<int:book_id>/favorite/', views.toggle_favorite_book, name='toggle_favorite_book'),
     path('books/<int:book_id>/mark-read/', views.mark_book_read, name='mark_book_read'),
     path('books/<int:book_id>/currently-reading/', views.currently_reading_books, name='currently_reading_books'),
+    path('books/<int:book_id>/log-progress/', views.log_reading_progress, name='log_reading_progress'),
+    path('books/<int:book_id>/progress-data/', views.get_reading_progress, name='get_reading_progress'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
