@@ -85,6 +85,7 @@ class UserProfile(models.Model):
     favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
     read_books = models.ManyToManyField(Book, related_name='read_by', blank=True)
     currently_reading_books = models.ManyToManyField(Book, related_name="currently_reading_by", blank=True)
+    image = models.ImageField(upload_to='profile_pics', default='profile_pics/default_profile.jpg')
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
@@ -96,7 +97,7 @@ class ReadingProgress(models.Model):
     date = models.DateField(default = timezone.now)
 
     class Meta:
-        unique_together = ('user', 'book', 'date')
+        pass
     
     def __str__(self):
         return f"{self.user.username} read {self.pages_read} pages of {self.book.title} on {self.date}"

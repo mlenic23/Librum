@@ -270,7 +270,12 @@ body {
 .user-profile-section {
     flex: 1;
     padding: 25px;
-    background-color: #af6436d2;
+    margin-top:50px;
+    background-color: rgba(194, 153, 121, 0.05);
+    box-shadow: 0 8px 32px 0px rgba(106, 79, 50, 0.37);
+    border:1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4.9px);
+    -webkit-backdrop-filter: blur(4.5px);
     border-radius: 15px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     transition: transform 0.3s ease;
@@ -464,7 +469,7 @@ body {
 
 #readingProgressForm button {
     padding: 5px 10px;
-    background-color: #4CAF50;
+    background-color: #af824c;
     color: white;
     border: none;
     border-radius: 3px;
@@ -474,3 +479,65 @@ body {
 #readingProgressForm button:hover {
     background-color: #45a049;
 }
+
+
+
+  .profile-header {
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #6f4e37;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }
+
+  .profile-image {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    border: 3px solid #6f4e37;
+    object-fit: cover;
+    margin-right: 30px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4);
+  }
+
+  .profile-name {
+    font-size: 2.2rem;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    text-shadow: 1px 1px 0 #3d2f1c;
+  }
+
+  .profile-stats {
+    line-height: 1.6;
+  }
+
+  .profile-stats h3 {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+    border-bottom: 1px dashed #6f4e37;
+    padding-bottom: 8px;
+  }
+
+  .profile-stats p {
+    font-size: 1.1rem;
+    margin: 6px 0;
+  }
+
+
+.upload-form {
+  visibility: hidden; /* nevidljivo, ali zauzima prostor */
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease, visibility 0.3s ease;
+  margin-top: 0;
+}
+
+.upload-form.visible {
+  visibility: visible;
+  height: auto; /* ili npr. 100px ako želiš fiksnu visinu */
+  margin-top: 10px;
+}
+
+
+/* Kada se prikazuje, može ostati isto kao prije */

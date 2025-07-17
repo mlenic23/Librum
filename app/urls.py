@@ -15,5 +15,7 @@ urlpatterns = [
     path('books/<int:book_id>/mark-read/', views.mark_book_read, name='mark_book_read'),
     path('books/<int:book_id>/currently-reading/', views.currently_reading_books, name='currently_reading_books'),
     path('books/<int:book_id>/log-progress/', views.log_reading_progress, name='log_reading_progress'),
-    path('books/<int:book_id>/progress-chart-data/', views.reading_progress_chart_data, name='reading_progress_chart_data'),
+    path('books/<int:book_id>/total-progress/', views.total_reading_progress, name='total_reading_progress'),
+    path('upload-profile-image/', views.upload_profile_image, name='upload_profile_image'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

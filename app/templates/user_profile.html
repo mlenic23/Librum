@@ -9,23 +9,57 @@
 
 <div class="bookshelf-container">
 
-<div class="main-layout">
-    <div class="user-profile-section">
-        <div class="user-info">
-            <h3>Statistics</h3>
-            <p>Number of books read: {{ read_books.count }}</p>
-            <p>Number of favorite books: {{ favorite_books.count }}</p>
-            <p>Total number of pages read: {{ total_pages }}</p>
-            <p>The most often read genre: {{ top_genre }}</p>
-            <p>The most often read by the author: {{ top_author }}</p>
-        </div>
+<div class="main-layout" style="display: flex; gap: 40px; align-items: flex-start; margin-top: 50px;">
+
+  <!-- Profilna slika + ime -->
+  <div class="profile-section" style="flex: 1; text-align: center;">
+    <div class="profile-image-wrapper" style="position: relative; display: inline-block;">
+      <img src="{{ user.userprofile.image.url }}" alt="Profile Picture" width="150" height="150" id="profileImage" style="border-radius: 50%; cursor: pointer;">
+      
+      <!-- Forma za upload slike -->
+      <form method="post" enctype="multipart/form-data" action="{% url 'upload_profile_image' %}" id="uploadForm" style="display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); background: #fff; padding: 10px; border: 1px solid #ccc; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 10;">
+        {% csrf_token %}
+        <label for="image">Upload profile picture:</label>
+        <input type="file" name="image" id="image" accept="image/*" required>
+        <button type="submit">Upload</button>
+      </form>
     </div>
 
-        <div class="chart-section">
-            <h3 class="chart-title">Pages read today</h3>
+    <div class="profile-name" style="margin-top: 10px; font-weight: bold; font-size: 1.2em;">{{ request.user.username }}</div>
+  </div>
+
+  <!-- Statistika -->
+  <div class="profile-stats" style="flex: 1;">
+    <h3>Statistics</h3>
+    <p>Books read: {{ read_books.count }}</p>
+    <p>Favorite books: {{ favorite_books.count }}</p>
+    <p>Total pages read: {{ total_pages }}</p>
+    <p>Most read genre: {{ top_genre }}</p>
+    <p>Favorite author: {{ top_author }}</p>
+  </div>
+
+  <!-- Coveri 4 najdraže knjige -->
+  <div class="favorite-covers" style="flex: 1;">
+    <h3>Favorite Books</h3>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+      {% for book in favorite_books|slice:":4" %}
+        <div style="width: 80px; height: 120px; overflow: hidden; border: 1px solid #ccc; border-radius: 5px;">
+          {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+          {% else %}
+            <div style="display:flex; justify-content:center; align-items:center; height: 100%; font-size: 0.7em; color: #666;">No Image</div>
+          {% endif %}
         </div>
+      {% empty %}
+        <p>No favorite books added yet.</p>
+      {% endfor %}
     </div>
-    <h1 class="bookshelf-title">{{ request.user.username }}'s Bookshelf</h1>
+  </div>
+
+</div>
+
+
+    <h1 class="bookshelf-title">Bookshelf</h1>
 
     <h2 class="shelf-title">Currently Reading</h2>
     <div class="shelf">
@@ -57,7 +91,13 @@
             <input type="number" id="pagesRead" min="0" required>
             <button type="submit">Log Pages</button>
             </form>
-            <canvas id="pagesChart" width="400" height="200"></canvas>
+            <div id="progressWrapper" style="margin-top: 1em;">
+            <div style="margin-bottom: 0.5em;">Progress:</div>
+            <div id="progressBarContainer" style="width: 100%; height: 24px; background-color: #e0e0e0; border-radius: 12px; overflow: hidden;">
+                <div id="progressBar" style="height: 100%; width: 0%; background-color: #94742e; transition: width 0.5s;"></div>
+            </div>
+            <div id="progressText" style="margin-top: 0.5em;"></div>
+        </div>
         </div>
     </div>
     
