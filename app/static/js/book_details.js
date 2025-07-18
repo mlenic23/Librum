@@ -73,3 +73,11 @@ document.querySelectorAll('.action-icon').forEach(icon => {
         .catch(error => console.error('Error:', error));
     });
 });
+
+document.getElementById("openAuthorModal").onclick = function () {
+    document.getElementById("authorModal").classList.add("active");
+};
+
+document.getElementById("closeAuthorModal").onclick = function () {
+    document.getElementById("authorModal").classList.remove("active");
+};

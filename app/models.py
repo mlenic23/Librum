@@ -31,6 +31,8 @@ class Book(models.Model):
     number_of_pages = models.PositiveBigIntegerField(null=True, blank=True)
     famous_quote = models.TextField(null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
+    published_date = models.DateField(null=True, blank=True)
+    author_summary = models.TextField(null=True, blank=True)
     
 
     def __str__(self):

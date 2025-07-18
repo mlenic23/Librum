@@ -16,9 +16,12 @@
             </div>
             <div class="book-detail-right">
                 <h1 class="book-title">{{ book.title }}</h1>
-                <h3 class="book-author">{{ book.author }}</h3>
+                <h3 class="book-author">
+                    <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">{{ book.author }}</span>
+                </h3>
                 <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
                 <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
+                <p class="book-genre"><strong>Published:</strong> {{ book.published_date|date:"F j, Y" }}</p>
                 <button id="openSummaryModal" class="review-submit">Show summary</button>
                 <div class="action-icons">
                     <a href="{% url 'toggle_favorite_book' book.id %}" class="action-icon favorite-icon {% if book in user.userprofile.favorite_books.all %}filled{% endif %}" title="Add to Favorites">
@@ -118,6 +121,15 @@
     </div>
 </div>
 
+<div class="review-modal" id="authorModal">
+    <div class="review-modal-content">
+        <span class="close-modal" id="closeAuthorModal">×</span>
+        <h2><strong>{{book.author}}</strong></h2>
+        <p>{{book.author_summary}}</p>
+    </div>
+</div>
+
+
 <div class="review-modal" id="reviewModal">
     <div class="review-modal-content">
         <span class="close-modal" id="closeModal">×</span>
@@ -130,6 +142,8 @@
     </div>
 </div>
 </div>
+
+
 
 <script src="{% static 'js/book_details.js' %}"></script>
 {% endblock %}

@@ -729,7 +729,7 @@ li a img {
 }
 
 .book-details-flex {
-    background: linear-gradient(135deg, rgba(245, 244, 241, 0.9) 0%, rgba(200, 177, 158, 0.9) 100%), url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    background: url(https://images.pexels.com/photos/7682364/pexels-photo-7682364.jpeg);
     background-size: cover, auto;
     background-attachment: fixed, scroll;
     padding: 40px;
