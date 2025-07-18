@@ -9,7 +9,8 @@
 
 <div class="bookshelf-container">
 
-<div class="main-layout" style="display: flex; gap: 40px; align-items: flex-start; margin-top: 50px;">
+
+<div class="main-layout" style="display: flex; gap: 40px; align-items: flex-start; margin-top: 50px; padding-top: 20px; padding-bottom: 5px;">
 
   <!-- Profilna slika + ime -->
   <div class="profile-section" style="flex: 1; text-align: center;">
@@ -38,28 +39,28 @@
     <p>Favorite author: {{ top_author }}</p>
   </div>
 
-  <!-- Coveri 4 najdraže knjige -->
   <div class="favorite-covers" style="flex: 1;">
-    <h3>Favorite Books</h3>
-    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-      {% for book in favorite_books|slice:":4" %}
-        <div style="width: 80px; height: 120px; overflow: hidden; border: 1px solid #ccc; border-radius: 5px;">
-          {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="width: 100%; height: 100%; object-fit: cover;">
-          {% else %}
-            <div style="display:flex; justify-content:center; align-items:center; height: 100%; font-size: 0.7em; color: #666;">No Image</div>
-          {% endif %}
-        </div>
-      {% empty %}
-        <p>No favorite books added yet.</p>
-      {% endfor %}
-    </div>
+  <h3>Favorite Books</h3>
+  <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+    {% for book in top_rated_books|slice:":4" %}
+      <div style="width: 80px; height: 120px; overflow: hidden; border: 1px solid #ccc; border-radius: 5px;">
+        {% if book.cover_image %}
+          <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+          <div style="display:flex; justify-content:center; align-items:center; height: 100%; font-size: 0.7em; color: #666;">No Image</div>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p>No favorite books added yet.</p>
+    {% endfor %}
   </div>
+</div>
+
 
 </div>
 
 
-    <h1 class="bookshelf-title">Bookshelf</h1>
+    <h1 class="bookshelf-title">Bookshelves</h1>
 
     <h2 class="shelf-title">Currently Reading</h2>
     <div class="shelf">
@@ -102,7 +103,7 @@
     </div>
     
 
-    <h2 class="shelf-title">Favorite Books</h2>
+    <h2 class="shelf-title">Wishlist</h2>
     <div class="shelf">
         {% for book in favorite_books %}
         <div class="book">
@@ -113,7 +114,7 @@
         </div>
         {% empty %}
         <p class="empty-shelf">
-            No favorite books yet. Start adding some!
+            No books yet. Start adding some!
         </p>
         {% endfor %}
     </div>

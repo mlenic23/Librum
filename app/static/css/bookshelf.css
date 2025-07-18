@@ -4,7 +4,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, rgba(245, 244, 241, 0.9) 0%, rgba(200, 177, 158, 0.9) 100%);
+    background-image: url(https://img.pikbest.com/wp/202408/screensaver-wallpaper-vintage-aesthetic-abstract-background-featuring-white-and-brown-crumpled-paper-texture-perfect-as-or_9964613.jpg!sw800);
     background-size: cover, auto;
     background-attachment: fixed, scroll;
     font-family: 'Roboto', sans-serif;
@@ -17,13 +17,15 @@ body {
     margin: 0 auto;
     padding: 40px 20px;
     box-sizing: border-box;
+
 }
 
 .bookshelf-title {
     text-align: center;
     color: #4e2f1a;
-    margin-bottom: 2.5rem;
-    font-size: 2.8rem;
+    margin-top: 80px;
+    margin-bottom: 2.1rem;
+    font-size: 2.5rem;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -39,6 +41,8 @@ body {
     border-bottom: 2px solid #c8b19e;
     padding-bottom: 0.75rem;
     text-transform: capitalize;
+    text-align: left;
+    font-weight: bold;
 }
 
 
@@ -477,7 +481,7 @@ body {
 }
 
 #readingProgressForm button:hover {
-    background-color: #45a049;
+    background-color: #c8b19e;
 }
 
 
@@ -494,7 +498,7 @@ body {
     width: 110px;
     height: 110px;
     border-radius: 50%;
-    border: 3px solid #6f4e37;
+    border: 3px solid #5c3c26;
     object-fit: cover;
     margin-right: 30px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.4);
@@ -505,6 +509,7 @@ body {
     font-weight: bold;
     letter-spacing: 1.5px;
     text-shadow: 1px 1px 0 #3d2f1c;
+    color:#90652f;
   }
 
   .profile-stats {
@@ -517,11 +522,13 @@ body {
     margin-bottom: 15px;
     border-bottom: 1px dashed #6f4e37;
     padding-bottom: 8px;
+    color:#90652f;
   }
 
   .profile-stats p {
     font-size: 1.1rem;
     margin: 6px 0;
+    color:#90652f;
   }
 
 
@@ -539,5 +546,11 @@ body {
   margin-top: 10px;
 }
 
+.main-layout{
+    background-color: rgba(194, 153, 121, 0.05);
+    box-shadow: 0 8px 32px 0px rgba(106, 79, 50, 0.37);
+    border:1px solid rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(4.9px);
+    -webkit-backdrop-filter: blur(4.5px);
 
-/* Kada se prikazuje, može ostati isto kao prije */
+}

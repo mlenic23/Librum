@@ -90,11 +90,17 @@ def book_list(request):
         'sort': sort,  
     })
 
-@login_required  
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect, render
+from django.db.models import Avg
+
+@login_required
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     reviews = book.reviews.all().order_by('-created_at')
-    user_profile = get_object_or_404(UserProfile, user=request.user)
+
+    # Ovde dobijamo ili kreiramo profil ako ne postoji
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     for review in reviews:
         review.user_liked = review.is_liked_by(request.user)
@@ -121,6 +127,7 @@ def book_detail(request, book_id):
                 book.average_rating = round(avg_rating, 2) if avg_rating else 0
                 book.save()
                 return redirect('book_detail', book_id=book.id)
+
         if 'review_submit' in request.POST:
             review_form = ReviewForm(request.POST)
             if review_form.is_valid():
@@ -136,8 +143,9 @@ def book_detail(request, book_id):
         'form': review_form,
         'rating_form': rating_form,
         'user_rating': user_rating,
-        'rating_range': [5, 4, 3, 2, 1],  
+        'rating_range': [5, 4, 3, 2, 1],
     })
+
 
 @login_required
 def toggle_review_like(request, review_id):
@@ -160,6 +168,13 @@ def user_profile(request):
     author_counts = profile.read_books.values('author').annotate(count=Count('id')).order_by('-count').first()
     top_author = author_counts['author'] if author_counts else 'N/A'
 
+    top_rated_books = (
+    profile.read_books
+    .annotate(avg_rating=Avg('ratings__rating'))
+    .order_by('-avg_rating')[:4]
+    )
+
+
 
     return render(request, 'user_profile.html', {
         'favorite_books': favorite_books,
@@ -170,6 +185,7 @@ def user_profile(request):
         'top_genre': top_genre,
         'top_author': top_author,
         'currently_reading_books':currently_reading_books,
+        'top_rated_books':top_rated_books,
     })
 
 @login_required
@@ -188,21 +204,34 @@ def mark_book_read(request, book_id):
         user_profile = get_object_or_404(UserProfile, user=request.user)
         book = get_object_or_404(Book, id=book_id)
         if book not in user_profile.read_books.all():
-            user_profile.read_books.add(book)
+         user_profile.read_books.add(book)
+        if book in user_profile.favorite_books.all():
+         user_profile.favorite_books.remove(book)
+
         return redirect('user_profile')
     return redirect('user_profile')
 
 @login_required
 def currently_reading_books(request, book_id):
     if request.method == "POST":
-        book = get_object_or_404(Book, id = book_id)
+        book = get_object_or_404(Book, id=book_id)
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        if book in user_profile.currently_reading_books.all():
-            user_profile.currently_reading_books.remove(book)
-        else:
+        
+        # Dodaj knjigu u trenutno čitam, ako već nije ni u jednoj polici
+        if book not in user_profile.currently_reading_books.all():
             user_profile.currently_reading_books.add(book)
+        
+        # Ukloni je iz wishlista, ako je tamo
+        if book in user_profile.favorite_books.all():
+            user_profile.favorite_books.remove(book)
+        
+        # Takođe, ukloni iz read_books ako je tamo jer ne može da bude u obe police
+        if book in user_profile.read_books.all():
+            user_profile.read_books.remove(book)
+        
         return redirect('user_profile')
     return redirect('user_profile')
+
 
 @login_required
 def log_reading_progress(request, book_id):

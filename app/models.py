@@ -85,7 +85,7 @@ class UserProfile(models.Model):
     favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
     read_books = models.ManyToManyField(Book, related_name='read_by', blank=True)
     currently_reading_books = models.ManyToManyField(Book, related_name="currently_reading_by", blank=True)
-    image = models.ImageField(upload_to='profile_pics', default='profile_pics/default_profile.jpg')
+    image = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg')
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
