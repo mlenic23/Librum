@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Klik van forme sakrije je
   document.addEventListener('click', (e) => {
     if (!uploadForm.contains(e.target) && e.target !== profileImage) {
       uploadForm.style.display = 'none';

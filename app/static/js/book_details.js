@@ -60,7 +60,7 @@ document.querySelectorAll('.action-icon').forEach(icon => {
         })
         .then(response => {
             if (response.redirected) {
-                window.location.href = response.url; // Prati redirect
+                window.location.href = response.url;
             } else {
                 return response.json();
             }

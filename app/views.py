@@ -14,7 +14,7 @@ from django.http import JsonResponse
 import pandas as pd
 from django.db.models import Avg, Sum, Count
 from django.utils import timezone
-from datetime import date
+from django.db.models.functions import ExtractYear
 from sklearn.preprocessing import LabelEncoder
 
 def home(request):
@@ -55,15 +55,56 @@ def clean_email(self):
         raise forms.ValidationError("Email is already in use.")
     return email
 
-def book_list(request):
-    query = request.GET.get('q')  
-    selected_genres = request.GET.getlist('genre')  
-    sort = request.GET.get('sort')  
-
-    books = Book.objects.all()
+def search_books(request):
+    query = request.GET.get('q', '').strip()
+    books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
 
     if query:
-        books = books.filter(Q(title__icontains=query) | Q(author__icontains=query))
+        terms = query.lower().split()
+        conditions = Q()
+
+        for term in terms:
+            if term.isdigit() and 1000 <= int(term) <= 2025:  
+                year = int(term)
+                conditions &= Q(published_year=year)
+
+            elif term.isdigit():  
+                pages = int(term)
+                conditions &= Q(number_of_pages__gte=max(0, pages - 50)) & Q(number_of_pages__lte=pages + 50)
+
+            elif not any(char.isdigit() for char in term):
+                text_condition = (
+                    Q(author__icontains=term) &
+                    Q(title__icontains=term) &
+                    Q(genre__icontains=term)
+                )
+                text_condition = (
+                    Q(author__icontains=term) |
+                    Q(title__icontains=term) |
+                    Q(genre__icontains=term)
+                )
+                conditions &= text_condition
+
+        books = books.filter(conditions).filter(published_date__isnull=False)
+
+    return {
+        'books': books,
+        'query': query,
+    }
+
+def filter_books(request, search_data=None):
+    if search_data is None:
+        books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
+    else:
+        books = search_data['books']
+
+    selected_genres = request.GET.getlist('genre')
+    sort = request.GET.get('sort')
+    min_pages = request.GET.get('min_pages')
+    max_pages = request.GET.get('max_pages')
+    min_year = request.GET.get('min_year')
+    max_year = request.GET.get('max_year')
+    selected_author = request.GET.get('author')
 
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
@@ -71,35 +112,71 @@ def book_list(request):
         if db_genres:
             books = books.filter(genre__in=db_genres)
 
+    if min_pages and max_pages:
+        try:
+            min_pages = int(min_pages)
+            max_pages = int(max_pages)
+            if min_pages > max_pages:
+                min_pages, max_pages = max_pages, min_pages  
+        except ValueError:
+            min_pages = max_pages = None  
+    elif min_pages:
+        min_pages = int(min_pages)
+    elif max_pages:
+        max_pages = int(max_pages)
+
+    if min_pages:
+        books = books.filter(number_of_pages__gte=min_pages)
+
+    if max_pages:
+        books = books.filter(number_of_pages__lte=max_pages)
+
+    if min_year:
+        books = books.filter(published_year__gte=min_year)
+
+    if max_year:
+        books = books.filter(published_year__lte=max_year)
+
+    if selected_author:
+        books = books.filter(author=selected_author)
+
     if sort == 'asc':
         books = books.order_by('title')
     elif sort == 'desc':
         books = books.order_by('-title')
 
-    paginator = Paginator(books, 8)
+    paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
-   
+
     all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
+    all_authors = Book.objects.values_list('author', flat=True).distinct()
 
     return render(request, 'book_list.html', {
         'books': page_obj.object_list,
         'page_obj': page_obj,
         'genres': all_genres,
         'selected_genres': selected_genres,
-        'sort': sort,  
+        'sort': sort,
+        'min_pages': min_pages,
+        'max_pages': max_pages,
+        'min_year': min_year,
+        'max_year': max_year,
+        'selected_author': selected_author,
+        'authors': all_authors,
+        'query': search_data['query'] if search_data else '',
     })
 
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render
-from django.db.models import Avg
+def book_list(request):
+    search_data = search_books(request)
+    return filter_books(request, search_data)
+
 
 @login_required
 def book_detail(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     reviews = book.reviews.all().order_by('-created_at')
 
-    # Ovde dobijamo ili kreiramo profil ako ne postoji
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
 
     for review in reviews:
@@ -174,8 +251,6 @@ def user_profile(request):
     .order_by('-avg_rating')[:4]
     )
 
-
-
     return render(request, 'user_profile.html', {
         'favorite_books': favorite_books,
         'read_books': read_books,
@@ -216,16 +291,13 @@ def currently_reading_books(request, book_id):
     if request.method == "POST":
         book = get_object_or_404(Book, id=book_id)
         user_profile = get_object_or_404(UserProfile, user=request.user)
-        
-        # Dodaj knjigu u trenutno čitam, ako već nije ni u jednoj polici
+
         if book not in user_profile.currently_reading_books.all():
             user_profile.currently_reading_books.add(book)
         
-        # Ukloni je iz wishlista, ako je tamo
         if book in user_profile.favorite_books.all():
             user_profile.favorite_books.remove(book)
         
-        # Takođe, ukloni iz read_books ako je tamo jer ne može da bude u obe police
         if book in user_profile.read_books.all():
             user_profile.read_books.remove(book)
         
@@ -328,5 +400,5 @@ def upload_profile_image(request):
         if 'image' in request.FILES:
             profile.image = request.FILES['image']
             profile.save()
-        return redirect('user_profile')  # ili gdje želiš da se vratiš
+        return redirect('user_profile') 
     return redirect('user_profile')

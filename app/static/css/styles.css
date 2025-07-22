@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Berkshire+Swash&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Pacifico&family=Slabo+27px&family=Tajawal:wght@200;300;400;500;700;800;900&family=Unbounded:wght@200..900&display=swap');
+
 *{
     font-family: "Merriweather", serif;
     color:hsl(22, 29%, 61%);
@@ -729,7 +730,7 @@ li a img {
 }
 
 .book-details-flex {
-    background: url(https://images.pexels.com/photos/7682364/pexels-photo-7682364.jpeg);
+    background: url('/static/photo/books.png');
     background-size: cover, auto;
     background-attachment: fixed, scroll;
     padding: 40px;
@@ -1117,8 +1118,6 @@ li a img {
     border-color: #946b57;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Berkshire+Swash&family=Merriweather:ital,opsz,wght@0,18..144,300..900;1,18..144,300..900&family=Pacifico&family=Slabo+27px&family=Tajawal:wght@200;300;400;500;700;800;900&family=Unbounded:wght@200..900&display=swap');
-
 .bookshelf-container {
     max-width: 1200px;
     margin: auto;
@@ -1347,7 +1346,7 @@ li a img {
 }
 
 .action-icon.filled .icon {
-    stroke: #ff0000; /* Crvena boja za filled stanje */
+    stroke: #ff0000; 
 }
 
 .currently-reading-icon .icon {
@@ -1372,17 +1371,103 @@ li a img {
 .currently-reading-icon i {
     font-size: 24px;
     position: relative;
-    top: 1px; /* prilagodi da bude baš u ravnini */
+    top: 1px; 
 }
 
 .action-icons a {
-    text-decoration: none; /* Uklanja podcrtavanje */
+    text-decoration: none; 
 }
 
 .currently-reading-icon {
-    text-decoration: none; /* Uklanja podcrtavanje */
+    text-decoration: none; 
 }
 
 .filled i {
-    color: red; /* ili neka druga vizualna promjena */
+    color: red; 
+}
+
+.filter{
+    margin-top:20px;
+}
+
+
+select.sort-select,
+select[name="author"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top:0px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin: 0px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+.filter-button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #a67c52;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.filter-button:hover {
+    background-color: #8c6239;
+}
+
+
+#year-slider {
+    margin-left:20px;
+    margin-right:20px;
+    background: transparent; 
+}
+
+#year-slider .noUi-base {
+    background: transparent; 
+    border-radius: 10px;
+    height: 17px;
+    background-image: none;
+    box-shadow: none; 
+}
+
+#year-slider .noUi-connect {
+    background: #a67c52;
+    width: 100%;
+}
+
+#year-slider .noUi-handle {
+    background: #7b4e00;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    top: -6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    cursor: grab;
+}
+
+#year-slider .noUi-handle::after,
+#year-slider .noUi-handle::before {
+    display: none;
+}
+
+#year-slider .noUi-tooltip {
+    background: #333;
+    color: #e5cbaa;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    border: none;
 }
