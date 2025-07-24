@@ -21,10 +21,12 @@
         <form method="GET" action="" class="genre-filter-form">
    
             <div class="sort-box">
-                <label for="sort">Sort by title:</label>
+                <label for="sort">Sort by:</label>
                 <select name="sort" id="sort" class="sort-select">
-                    <option value="asc" {% if request.GET.sort == 'asc' %}selected{% endif %}>Ascending</option>
-                    <option value="desc" {% if request.GET.sort == 'desc' %}selected{% endif %}>Descending</option>
+                    <option value="asc" {% if request.GET.sort == 'asc' %}selected{% endif %}>Title Ascending</option>
+                    <option value="desc" {% if request.GET.sort == 'desc' %}selected{% endif %}>Title Descending</option>
+                    <option value="rating_desc" {% if request.GET.sort_rating == 'rating_desc' %}selected{% endif %}>Highest Rating</option>
+                    <option value="rating_asc" {% if request.GET.sort_rating == 'rating_asc' %}selected{% endif %}>Lowest Rating</option> 
                 </select>
             </div>
 

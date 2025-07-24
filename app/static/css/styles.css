@@ -230,9 +230,9 @@ nav {
 
 .messages {
     margin-top: 20px;
-    background-color: #f9f9f9;
+    background-color: none;
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid #c8b19e8a;
     border-radius: 5px;
 }
 
@@ -242,7 +242,7 @@ nav {
 }
 
 .messages li {
-    color: #d9534f;
+    color: #c8b19e;
     font-size: 16px;
 }
 
@@ -432,7 +432,7 @@ li a img {
 .book-card {
     background-color: rgba(194, 153, 121, 0.05);
     box-shadow: 0 8px 32px 0px rgba(106, 79, 50, 0.37);
-    border:1px solid #946b57;
+    border:1px solid #6e4b3a;
     backdrop-filter: blur(4.9px);
     -webkit-backdrop-filter: blur(4.5px);
     border-radius: 8px;
@@ -457,7 +457,7 @@ li a img {
 
 .book-card h2 {
     font-size: 1.1em;
-    color: #333;
+    color: black;
     margin: 10px 0;
 }
 
@@ -468,7 +468,7 @@ li a img {
 
 .book-card p {
     font-size: 0.7em;
-    color: #000000;
+    color: #6e4b3a;
     margin-bottom: 15px;
 }
 
@@ -493,7 +493,7 @@ li a img {
     border-radius: 50px;
     background-color:#f5f5f5;
     font-size:15px;
-    color:#333;
+    color:#6e4b3a;
     outline:none;
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
     transition: all 0.3s ease;
@@ -528,7 +528,7 @@ li a img {
 
 .search-bar button:hover{
     transform: scale(1.1);
-    background-color: #946b57;
+    background-color: #6e4b3a;
 }
 
 .filter-box{
@@ -557,22 +557,6 @@ li a img {
     accent-color: #6e4b3a;
 }
 
-.filter-button{
-    background-color: #946b57;
-    color:white;
-    border:none;
-    border-radius: 25px;
-    padding:10px;
-    font-size:14px;
-    cursor: pointer;
-    margin-top:10px;
-    transition: 0.3s ease;
-}
-
-.filter-button:hover{
-    background-color: #6e4b3a;
-}
-
 .genre-columns {
     display: flex;
     gap: 20px;
@@ -583,8 +567,6 @@ li a img {
     flex-direction: column;
     flex: 1;
 }
-
-
 .bookQuote {
     margin-top: 30px;
     margin-left:5px;
@@ -619,39 +601,6 @@ li a img {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
-.filter-button {
-    background-color: #946b57;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    padding: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: 0.3s ease;
-}
-
-.filter-button:hover {
-    background-color: #6e4b3a;
-}
-
-.add-book-button {
-    display: inline-block;
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #946b57;
-    color: white;
-    text-decoration: none;
-    border-radius: 25px;
-    font-size: 14px;
-    border:2px solid black;
-    margin-left:80px;
-}
-
-.add-book-button:hover {
-    background-color: #6e4b3a;
-}
-
 .pagination {
     display: flex;
     justify-content: center;
@@ -664,56 +613,24 @@ li a img {
 .pagination a {
     padding: 10px 18px;
     border-radius: 8px;
-    background-color: #3e2f26;
+    background-color: #6e4b3a;
     color: #f0e6dc;
     text-decoration: none;
     font-weight: 500;
     font-size: 14px;
-    border: 1px solid #5a4537;
+    border: 1px solid #6e4b3a;
     transition: background-color 0.3s ease, color 0.3s ease;
     white-space: nowrap; 
 }
 
-
 .pagination a:hover {
-    background-color: #5a4537;
-    color: #fffaf2;
-}
-
-.favorite-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    background-color: transparent;
+    color: #6e4b3a;
 }
 
 .book-card {
     position: relative; 
 }
-
-.favorite-btn button {
-    background: none;
-    border: none;
-    font-size: 22px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.favorite-btn button:hover {
-    transform: scale(1.2);
-    color: #6e4b3a;
-}
-
-.heart {
-    font-size: 24px;
-    color: gray;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    margin-left: 10px;
-  }
-  
-.heart.filled {
-    color: red;
-  }
   
 .sort-box {
     margin-bottom: 20px;
@@ -729,8 +646,92 @@ li a img {
     margin-right: 10px;
 }
 
+select.sort-select,
+select[name="author"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin-top:0px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 6px 8px;
+    margin: 0px;
+    background-color: #2e2e2e;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    border-radius: 6px;
+}
+
+.filter-button {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #6e4b3a;
+    color: #c8b19e;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.filter-button:hover {
+    background-color: #c8b19e;
+    color:#6e4b3a;
+}
+
+
+#year-slider {
+    margin-left:20px;
+    margin-right:20px;
+    background: transparent; 
+}
+
+#year-slider .noUi-base {
+    background: transparent; 
+    border-radius: 10px;
+    height: 17px;
+    background-image: none;
+    box-shadow: none; 
+}
+
+#year-slider .noUi-connect {
+    background: #c8b19e;
+    width: 100%;
+}
+
+#year-slider .noUi-handle {
+    background: #6e4b3a;
+    border: 2px solid white;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    top: -6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    cursor: grab;
+}
+
+#year-slider .noUi-handle::after,
+#year-slider .noUi-handle::before {
+    display: none;
+}
+
+#year-slider .noUi-tooltip {
+    background: #333;
+    color: white;
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 4px 8px;
+    border: none;
+}
+
+
+
 .book-details-flex {
-    background: url('/static/photo/books.png');
+    background: url('/static/photo/detail_photo.png');
     background-size: cover, auto;
     background-attachment: fixed, scroll;
     padding: 40px;
@@ -847,39 +848,36 @@ li a img {
     margin: 30px 0;
 }
 
-.rating-section {
+.reviews-display {
     margin-top: 30px;
-    padding: 25px;
-    background: linear-gradient(135deg, rgba(194, 153, 121, 0.2), rgba(239, 212, 191, 0.2));
+    padding: 20px;
+    background: linear-gradient(135deg, #f9f6f3, #e0d4c8);
     border-radius: 15px;
-    box-shadow: inset 0 0 20px rgba(148, 107, 87, 0.1);
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
-.rating-title {
-    font-family: "Berkshire Swash", serif;
-    font-size: 2.2em;
-    color: #4a3b2c;
-    text-align: center;
-    text-shadow: 0 0 10px rgba(148, 107, 87, 0.3);
-    margin-bottom: 15px;
+.rating-section {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
 }
 
 .rating-content {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 30px;
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    gap: 15px;
+    height: 100%; 
 }
 
 .star-rating {
     direction: rtl;
     display: inline-flex;
     gap: 5px;
+    align-items: center;
 }
 
 .star-rating input[type="radio"] {
@@ -887,20 +885,15 @@ li a img {
 }
 
 .star-rating label {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     color: #e6d9c6;
     cursor: pointer;
-    animation: starPulse 1.5s infinite alternate;
-}
-
-@keyframes starPulse {
-    from { transform: scale(1); }
-    to { transform: scale(1.1); }
+    transition: color 0.3s ease;
+    line-height: 1; 
 }
 
 .star-rating input[type="radio"]:checked ~ label {
     color: #d4af37;
-    text-shadow: 0 0 10px #d4af37;
 }
 
 .star-rating input[type="radio"]:disabled:checked ~ label {
@@ -910,22 +903,30 @@ li a img {
 .average-rating-text {
     font-family: "Merriweather", serif;
     font-size: 1.2em;
+    font-weight: 600;
     color: #4a3b2c;
-    background: linear-gradient(90deg, #e0d4c8, #c8b19e);
-    padding: 10px 20px;
+    padding: 8px 18px;
     border-radius: 20px;
+    background-color:#c8b19e;
+    box-shadow: 0 2px 5px rgba(74, 59, 44, 0.2);
+    display:flex;
+    align-items: center;
+    gap: 5px;
+    line-height: 1; 
 }
 
 .average-rating {
-    font-weight: bold;
-    color: #4a3b2c;
+    font-weight: 700;
+    color: red;
+    font-size: 1.3em;
 }
 
 .login-to-rate {
     font-family: "Merriweather", serif;
     font-size: 1.1em;
     color: #946b57;
-    text-align: center;
+    display: flex;
+    align-items: center; 
 }
 
 .login-to-rate a {
@@ -937,14 +938,6 @@ li a img {
 .login-to-rate a:hover {
     color: #6e4b3a;
     text-decoration: underline;
-}
-
-.reviews-display {
-    margin-top: 60px;
-    padding: 20px;
-    background: linear-gradient(135deg, #f9f6f3, #e0d4c8);
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
 .reviews-display h2 {
@@ -1002,8 +995,8 @@ li a img {
 }
 
 .like-button {
-    background: #946b57;
-    color: #fff;
+    background: #6e4b3a;
+    color: #c8b19e;
     border: none;
     border-radius: 20px;
     padding: 5px 15px;
@@ -1022,11 +1015,11 @@ li a img {
 .review-section p {
     font-family: "Merriweather", serif;
     font-size: 1.1em;
-    color: #946b57;
+    color: #6e4b3a;
 }
 
 .review-section p a {
-    color: #b88063;
+    color: #6e4b3a;
     text-decoration: none;
     transition: color 0.3s ease;
 }
@@ -1038,16 +1031,18 @@ li a img {
 
 .review-submit {
     padding: 15px 30px;
-    background: linear-gradient(45deg, #946b57, #b88063);
+    background-color: #6e4b3a;
     border-radius: 50px;
-    border: 2px solid #fff;
-    color: #fff;
+    border: 2px solid #6e4b3a;
+    color: #c8b19e;
     font-size: 1em;
     cursor: pointer;
 }
 
 .review-submit:hover {
-    box-shadow: 0 10px 25px rgba(148, 107, 87, 0.6);
+    background-color: #c8b19e;
+    color:#6e4b3a;
+    border-color: #c8b19e;
 }
 
 .review-modal {
@@ -1080,7 +1075,6 @@ li a img {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
-
 .close-modal {
     position: absolute;
     top: 12px;
@@ -1154,38 +1148,6 @@ li a img {
     padding-bottom: 8px;
 }
 
-.shelf {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    background: #8B4513; 
-    padding: 15px;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); 
-}
-
-.shelf::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.5; 
-    z-index: -1;
-}
-
-.shelf::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 8px;
-    background: #6B3F0F; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
 
 .book {
     background: transparent; 
@@ -1229,24 +1191,6 @@ li a img {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.progress-text {
-    font-size: 12px;
-    color: #5a4537;
-    margin: 5px 0;
-    font-style: italic;
-}
-
-.empty-shelf {
-    font-family: "Pacifico", cursive;
-    font-size: 1.2em;
-    color: #6e4b3a;
-    text-align: center;
-    width: 100%;
-    padding: 20px;
-    background: rgba(239, 212, 191, 0.2);
-    border-radius: 5px;
 }
 
 .action-btn {
@@ -1390,84 +1334,7 @@ li a img {
     margin-top:20px;
 }
 
-
-select.sort-select,
-select[name="author"] {
-    width: 100%;
-    padding: 6px 8px;
-    margin-top:0px;
-    background-color: #2e2e2e;
-    color: #f5f5f5;
-    border: 1px solid #555;
-    border-radius: 6px;
-}
-
-input[type="number"] {
-    width: 100%;
-    padding: 6px 8px;
-    margin: 0px;
-    background-color: #2e2e2e;
-    color: #f5f5f5;
-    border: 1px solid #555;
-    border-radius: 6px;
-}
-
-.filter-button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    background-color: #a67c52;
-    color: #fff;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.filter-button:hover {
-    background-color: #8c6239;
-}
-
-
-#year-slider {
-    margin-left:20px;
-    margin-right:20px;
-    background: transparent; 
-}
-
-#year-slider .noUi-base {
-    background: transparent; 
-    border-radius: 10px;
-    height: 17px;
-    background-image: none;
-    box-shadow: none; 
-}
-
-#year-slider .noUi-connect {
-    background: #a67c52;
-    width: 100%;
-}
-
-#year-slider .noUi-handle {
-    background: #7b4e00;
-    border: 2px solid white;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    top: -6px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
-    cursor: grab;
-}
-
-#year-slider .noUi-handle::after,
-#year-slider .noUi-handle::before {
-    display: none;
-}
-
-#year-slider .noUi-tooltip {
-    background: #333;
-    color: #e5cbaa;
-    font-size: 12px;
-    border-radius: 4px;
-    padding: 4px 8px;
-    border: none;
+::selection {
+  background-color: #a07541; 
+  color: white;              
 }

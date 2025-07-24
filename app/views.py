@@ -140,10 +140,18 @@ def filter_books(request, search_data=None):
     if selected_author:
         books = books.filter(author=selected_author)
 
+    books = books.annotate(avg_rating=Avg('ratings__rating'))
+
     if sort == 'asc':
         books = books.order_by('title')
     elif sort == 'desc':
         books = books.order_by('-title')
+    elif sort == 'rating_desc':
+         books = books.order_by('-avg_rating')
+    elif sort == 'rating_asc':
+        books = books.order_by('avg_rating')
+ 
+
 
     paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
@@ -234,7 +242,9 @@ def toggle_review_like(request, review_id):
 
 @login_required
 def user_profile(request):
-    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    
+    profile = get_object_or_404(UserProfile, user=request.user)
+
     favorite_books = profile.favorite_books.all()
     currently_reading_books = profile.currently_reading_books.all()
     read_books = profile.read_books.all()
@@ -252,6 +262,7 @@ def user_profile(request):
     )
 
     return render(request, 'user_profile.html', {
+        'user_profile':profile,
         'favorite_books': favorite_books,
         'read_books': read_books,
         'recommended_books': recommended_books,
