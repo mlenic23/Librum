@@ -84,7 +84,11 @@
     {% if reviews %}
         {% for review in reviews %}
             <div class="single-review">
-                <p class="review-author"><strong>{{ review.user.username }}</strong>:</p>
+                <p class="review-author">
+                    <strong>
+                        <a class="username" href="{% url 'user_profile' review.user.id %}">{{ review.user.username }}</a>
+                    </strong>:
+                    </p>
                 <p class="review-content">{{ review.content }}</p>
                 <p class="review-date">{{ review.created_at|date:"F j, Y, g:i a" }}</p>
 
@@ -94,7 +98,7 @@
                         <button type="submit" class="like-button">
                             {% if review.user_liked %}Unlike{% else %}Like{% endif %}
                         </button>
-                        <span>{{ review.total_likes }} like(s)</span>
+                        <span>{{ review.total_likes }} like{{ review.total_likes|pluralize }}</span>
                     </form>
                 {% endif %}
             </div>

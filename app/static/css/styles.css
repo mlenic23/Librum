@@ -978,10 +978,12 @@ input[type="number"] {
 .review-author {
     font-weight: bold;
     font-size: 1.2em;
-    color: #4a3b2c;
+    color: #6e4b3a;
     margin-bottom: 5px;
 }
-
+.review-author:hover{
+    color:#c8b19e;
+}
 .review-content {
     font-size: 1.1em;
     color: #5a4537;
@@ -1119,35 +1121,6 @@ input[type="number"] {
     background: transparent; 
     font-family: "Merriweather", serif;
 }
-
-.bookshelf-title {
-    font-family: "Berkshire Swash", serif;
-    font-size: 2.8em;
-    background: linear-gradient(90deg, #4a3b2c, #6e4b3a);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-align: center;
-    margin-top: 50px;
-    margin-bottom: 30px;
-    animation: titleGlow 2s ease-in-out infinite alternate;
-}
-
-@keyframes titleGlow {
-    from { text-shadow: 0 0 5px #4a3b2c; }
-    to { text-shadow: 0 0 20px #6e4b3a, 0 0 30px #946b57; }
-}
-
-.shelf-title {
-    font-family: "Pacifico", cursive;
-    font-size: 2.2em;
-    color: #4a3b2c;
-    text-align: center;
-    margin: 20px 0 10px;
-    border-bottom: 1px dashed #946b57;
-    padding-bottom: 8px;
-}
-
 
 .book {
     background: transparent; 
@@ -1334,7 +1307,14 @@ input[type="number"] {
     margin-top:20px;
 }
 
+.username{
+    color:#6e4b3a;
+}
+
+.username:hover{
+    color: #c8b19e;}
+
 ::selection {
-  background-color: #a07541; 
-  color: white;              
+  background-color: #6e4b3a; 
+  color: #c8b19e;              
 }

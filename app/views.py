@@ -241,14 +241,16 @@ def toggle_review_like(request, review_id):
     return redirect('book_detail', book_id=review.book.id)
 
 @login_required
-def user_profile(request):
-    
-    profile = get_object_or_404(UserProfile, user=request.user)
+def user_profile(request, user_id):
+    target_user = get_object_or_404(User, id=user_id)
+    profile = get_object_or_404(UserProfile, user=target_user)
 
     favorite_books = profile.favorite_books.all()
     currently_reading_books = profile.currently_reading_books.all()
     read_books = profile.read_books.all()
+    
     recommended_books = recommend_books_knn(request.user)
+
     total_pages = profile.read_books.aggregate(total=Sum('number_of_pages'))['total'] or 0
     genre_counts = profile.read_books.values('genre').annotate(count=Count('id')).order_by('-count').first()
     top_genre = genre_counts['genre'] if genre_counts else 'N/A'
@@ -256,13 +258,14 @@ def user_profile(request):
     top_author = author_counts['author'] if author_counts else 'N/A'
 
     top_rated_books = (
-    profile.read_books
-    .annotate(avg_rating=Avg('ratings__rating'))
-    .order_by('-avg_rating')[:4]
+        profile.read_books
+        .annotate(avg_rating=Avg('ratings__rating'))
+        .order_by('-avg_rating')[:4]
     )
 
     return render(request, 'user_profile.html', {
-        'user_profile':profile,
+        'user_profile': profile,
+        'target_user': target_user,
         'favorite_books': favorite_books,
         'read_books': read_books,
         'recommended_books': recommended_books,
@@ -270,9 +273,14 @@ def user_profile(request):
         'genre_counts': genre_counts,
         'top_genre': top_genre,
         'top_author': top_author,
-        'currently_reading_books':currently_reading_books,
-        'top_rated_books':top_rated_books,
+        'currently_reading_books': currently_reading_books,
+        'top_rated_books': top_rated_books,
     })
+
+
+@login_required
+def my_profile_redirect(request):
+    return redirect('user_profile', user_id=request.user.id)
 
 @login_required
 def toggle_favorite_book(request, book_id):

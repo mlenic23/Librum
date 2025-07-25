@@ -25,17 +25,20 @@
       </form>
     </div>
 
-    <div class="profile-name" style="margin-top: 10px; font-weight: bold; font-size: 1.2em;">{{ request.user.username }}</div>
+    <div class="profile-name" style="margin-top: 10px; font-weight: bold; font-size: 1.2em;">
+    {{ target_user.username }}
+    </div>
+
   </div>
 
 
   <div class="profile-stats" style="flex: 1;">
     <h3>Statistics</h3>
-    <p>Books read: {{ read_books.count }}</p>
-    <p>Favorite books: {{ favorite_books.count }}</p>
-    <p>Total pages read: {{ total_pages }}</p>
-    <p>Most read genre: {{ top_genre }}</p>
-    <p>Favorite author: {{ top_author }}</p>
+    <p class="book-info"><strong>Books read:</strong> {{ read_books.count }}</p>
+    <p class="book-info"><strong>Favorite books:</strong> {{ favorite_books.count }}</p>
+    <p class="book-info"><strong>Total pages read:</strong> {{ total_pages}}</p>
+    <p class="book-info"><strong>Most read genre:</strong> {{ top_genre }}</p>
+    <p class="book-info"><strong>Favorite author:</strong> {{ top_author }}</p>
   </div>
 
   <div class="favorite-covers" style="flex: 1;">
@@ -88,14 +91,14 @@
             <form id="readingProgressForm">
             {% csrf_token %}
             <input type="hidden" id="modalBookId">
-            <label for="pagesRead" class="read">Pages read today:</label>
+            <label for="pagesRead" class="read">Pages read:</label>
             <input type="number" id="pagesRead" min="0" required>
             <button type="submit">Log Pages</button>
             </form>
             <div id="progressWrapper" style="margin-top: 1em;">
             <div style="margin-bottom: 0.5em;">Progress:</div>
             <div id="progressBarContainer" style="width: 100%; height: 24px; background-color: #e0e0e0; border-radius: 12px; overflow: hidden;">
-                <div id="progressBar" style="height: 100%; width: 0%; background-color: #94742e; transition: width 0.5s;"></div>
+                <div id="progressBar" style="height: 100%; width: 0%; background-color: #6e4b3a; transition: width 0.5s;"></div>
             </div>
             <div id="progressText" style="margin-top: 0.5em;"></div>
         </div>
