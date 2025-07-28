@@ -35,7 +35,6 @@
   <div class="profile-stats" style="flex: 1;">
     <h3>Statistics</h3>
     <p class="book-info"><strong>Books read:</strong> {{ read_books.count }}</p>
-    <p class="book-info"><strong>Favorite books:</strong> {{ favorite_books.count }}</p>
     <p class="book-info"><strong>Total pages read:</strong> {{ total_pages}}</p>
     <p class="book-info"><strong>Most read genre:</strong> {{ top_genre }}</p>
     <p class="book-info"><strong>Favorite author:</strong> {{ top_author }}</p>
@@ -108,7 +107,7 @@
 
     <h2 class="shelf-title">Wishlist</h2>
     <div class="shelf">
-        {% for book in favorite_books %}
+        {% for book in wishlist_books %}
         <div class="book">
             <div class="book-title">{{ book.title }}</div>
             <a href="{% url 'book_detail' book.id %}">

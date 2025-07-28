@@ -84,7 +84,7 @@ class ReviewLike(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    favorite_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
+    wishlist_books = models.ManyToManyField(Book, related_name='favorited_by', blank=True)
     read_books = models.ManyToManyField(Book, related_name='read_by', blank=True)
     currently_reading_books = models.ManyToManyField(Book, related_name="currently_reading_by", blank=True)
     image = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg')

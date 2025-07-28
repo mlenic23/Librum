@@ -64,7 +64,7 @@ def search_books(request):
         conditions = Q()
 
         for term in terms:
-            if term.isdigit() and 1000 <= int(term) <= 2025:  
+            if term.isdigit() and 1800 <= int(term) <= 2025:  
                 year = int(term)
                 conditions &= Q(published_year=year)
 
@@ -93,24 +93,31 @@ def search_books(request):
     }
 
 def filter_books(request, search_data=None):
+
     if search_data is None:
         books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
     else:
         books = search_data['books']
 
-    selected_genres = request.GET.getlist('genre')
-    sort = request.GET.get('sort')
-    min_pages = request.GET.get('min_pages')
-    max_pages = request.GET.get('max_pages')
     min_year = request.GET.get('min_year')
     max_year = request.GET.get('max_year')
-    selected_author = request.GET.get('author')
+
+    if min_year:
+        books = books.filter(published_year__gte=min_year)
+
+    if max_year:
+        books = books.filter(published_year__lte=max_year)
+
+    selected_genres = request.GET.getlist('genre')
 
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
         db_genres = [genre_map.get(genre) for genre in selected_genres if genre in genre_map]
         if db_genres:
             books = books.filter(genre__in=db_genres)
+
+    min_pages = request.GET.get('min_pages')
+    max_pages = request.GET.get('max_pages')
 
     if min_pages and max_pages:
         try:
@@ -120,6 +127,7 @@ def filter_books(request, search_data=None):
                 min_pages, max_pages = max_pages, min_pages  
         except ValueError:
             min_pages = max_pages = None  
+
     elif min_pages:
         min_pages = int(min_pages)
     elif max_pages:
@@ -131,15 +139,12 @@ def filter_books(request, search_data=None):
     if max_pages:
         books = books.filter(number_of_pages__lte=max_pages)
 
-    if min_year:
-        books = books.filter(published_year__gte=min_year)
-
-    if max_year:
-        books = books.filter(published_year__lte=max_year)
+    selected_author = request.GET.get('author')
 
     if selected_author:
         books = books.filter(author=selected_author)
 
+    sort = request.GET.get('sort')
     books = books.annotate(avg_rating=Avg('ratings__rating'))
 
     if sort == 'asc':
@@ -151,8 +156,6 @@ def filter_books(request, search_data=None):
     elif sort == 'rating_asc':
         books = books.order_by('avg_rating')
  
-
-
     paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -245,7 +248,7 @@ def user_profile(request, user_id):
     target_user = get_object_or_404(User, id=user_id)
     profile = get_object_or_404(UserProfile, user=target_user)
 
-    favorite_books = profile.favorite_books.all()
+    wishlist_books = profile.wishlist_books.all()
     currently_reading_books = profile.currently_reading_books.all()
     read_books = profile.read_books.all()
     
@@ -266,7 +269,7 @@ def user_profile(request, user_id):
     return render(request, 'user_profile.html', {
         'user_profile': profile,
         'target_user': target_user,
-        'favorite_books': favorite_books,
+        'wishlist_books': wishlist_books,
         'read_books': read_books,
         'recommended_books': recommended_books,
         'total_pages': total_pages,
@@ -283,13 +286,13 @@ def my_profile_redirect(request):
     return redirect('user_profile', user_id=request.user.id)
 
 @login_required
-def toggle_favorite_book(request, book_id):
+def wishlist_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     user_profile = get_object_or_404(UserProfile, user=request.user)
-    if book in user_profile.favorite_books.all():
-        user_profile.favorite_books.remove(book)
+    if book in user_profile.wishlist_books.all():
+        user_profile.wishlist_books.remove(book)
     else:
-        user_profile.favorite_books.add(book)
+        user_profile.wishlist_books.add(book)
     return redirect('user_profile')
 
 @login_required
@@ -299,8 +302,8 @@ def mark_book_read(request, book_id):
         book = get_object_or_404(Book, id=book_id)
         if book not in user_profile.read_books.all():
          user_profile.read_books.add(book)
-        if book in user_profile.favorite_books.all():
-         user_profile.favorite_books.remove(book)
+        if book in user_profile.wishlist_books.all():
+         user_profile.wishlist_books.remove(book)
 
         return redirect('user_profile')
     return redirect('user_profile')
@@ -314,8 +317,8 @@ def currently_reading_books(request, book_id):
         if book not in user_profile.currently_reading_books.all():
             user_profile.currently_reading_books.add(book)
         
-        if book in user_profile.favorite_books.all():
-            user_profile.favorite_books.remove(book)
+        if book in user_profile.wishlist_books.all():
+            user_profile.wishlist_books.remove(book)
         
         if book in user_profile.read_books.all():
             user_profile.read_books.remove(book)
@@ -357,21 +360,30 @@ def log_reading_progress(request, book_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 
+from sklearn.preprocessing import LabelEncoder
+from sklearn.neighbors import NearestNeighbors
+import pandas as pd
+
 def recommend_books_knn(user, n_recommendations=5):
-    books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages')
+    books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages', 'published_date')  
     books_df = pd.DataFrame(books)
 
     books_df['average_rating'] = [Book.objects.get(id=book_id).average_rating() for book_id in books_df['id']]
+
+    books_df['published_year'] = pd.to_datetime(books_df['published_date'], errors='coerce').dt.year  # NOVO
 
     genre_encoder = LabelEncoder()
     author_encoder = LabelEncoder()
     
     books_df['genre_encoded'] = genre_encoder.fit_transform(books_df['genre'])
     books_df['author_encoded'] = author_encoder.fit_transform(books_df['author'])
+
     books_df['average_rating'] = books_df['average_rating'].fillna(books_df['average_rating'].mean())
     books_df['number_of_pages'] = books_df['number_of_pages'].fillna(books_df['number_of_pages'].mean())
+    books_df['published_year'] = books_df['published_year'].fillna(books_df['published_year'].mean())  
 
-    features = books_df[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating']].values
+
+    features = books_df[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating', 'published_year']].values
 
     try:
         user_profile = UserProfile.objects.get(user=user)
@@ -384,11 +396,11 @@ def recommend_books_knn(user, n_recommendations=5):
         return Book.objects.all().order_by('?')[:n_recommendations]
 
     read_books_data = books_df[books_df['id'].isin(read_books_ids)]
-    read_books_features = read_books_data[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating']].values
+    read_books_features = read_books_data[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating', 'published_year']].values 
     total_samples = len(books_df)
     n_neighbors = min(n_recommendations + len(read_books_ids), total_samples)
 
-    knn = NearestNeighbors(n_neighbors=n_neighbors, metric='cosine')
+    knn = NearestNeighbors(n_neighbors=n_neighbors, metric='euclidean')
     knn.fit(features)
 
     recommendations = set()
@@ -404,7 +416,7 @@ def recommend_books_knn(user, n_recommendations=5):
     recommended_books = Book.objects.filter(id__in=list(recommendations)[:n_recommendations])
     return recommended_books
 
-from django.db.models import Sum
+
 
 @login_required
 def total_reading_progress(request, book_id):

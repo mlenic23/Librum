@@ -37,6 +37,7 @@
                         <a href="{% url 'user_profile'  request.user.id%}">Profile</a>
                     {% else %}
                         <a href="{% url 'login' %}" class="{% if request.path == '/auth/login/' %}active{% endif %}">Login</a>
+                        <a href="{% url 'register' %}" class="{% if request.path == '/auth/register/' %}active{% endif %}">Register</a>
                     {% endif %}
                 </div>
             </li>
