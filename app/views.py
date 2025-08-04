@@ -9,13 +9,19 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
 from sklearn.neighbors import NearestNeighbors
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+
 from django.http import JsonResponse
 import pandas as pd
 from django.db.models import Avg, Sum, Count
 from django.utils import timezone
 from django.db.models.functions import ExtractYear
-from sklearn.preprocessing import LabelEncoder
+
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
+from sklearn.neighbors import NearestNeighbors
+import pandas as pd
+import numpy as np
+
 
 def home(request):
     return render(request, 'home.html')
@@ -60,37 +66,46 @@ def search_books(request):
     books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
 
     if query:
-        terms = query.lower().split()
-        conditions = Q()
+        full_query = query.lower()
+        full_condition = (
+            Q(author__icontains=full_query) |
+            Q(title__icontains=full_query) |
+            Q(genre__icontains=full_query)
+        )
 
-        for term in terms:
-            if term.isdigit() and 1800 <= int(term) <= 2025:  
-                year = int(term)
-                conditions &= Q(published_year=year)
+        matched_books = books.filter(full_condition)
 
-            elif term.isdigit():  
-                pages = int(term)
-                conditions &= Q(number_of_pages__gte=max(0, pages - 50)) & Q(number_of_pages__lte=pages + 50)
+        if matched_books.exists():
+            books = matched_books.filter(published_date__isnull=False)
+        else:
+            terms = full_query.split()
+            conditions = Q()
 
-            elif not any(char.isdigit() for char in term):
-                text_condition = (
-                    Q(author__icontains=term) &
-                    Q(title__icontains=term) &
-                    Q(genre__icontains=term)
-                )
-                text_condition = (
-                    Q(author__icontains=term) |
-                    Q(title__icontains=term) |
-                    Q(genre__icontains=term)
-                )
-                conditions &= text_condition
+            for term in terms:
 
-        books = books.filter(conditions).filter(published_date__isnull=False)
+                if term.isdigit() and 1800 <= int(term) <= 2025:
+                    year = int(term)
+                    conditions &= Q(published_year=year)
+
+                elif term.isdigit():
+                    pages = int(term)
+                    conditions &= Q(number_of_pages__gte=max(0, pages - 50)) & Q(number_of_pages__lte=pages + 50)
+
+                elif not any(char.isdigit() for char in term):
+                    text_condition = (
+                        Q(author__icontains=term) |
+                        Q(title__icontains=term) |
+                        Q(genre__icontains=term)
+                    )
+                    conditions &= text_condition
+
+            books = books.filter(conditions).filter(published_date__isnull=False)
 
     return {
         'books': books,
         'query': query,
     }
+
 
 def filter_books(request, search_data=None):
 
@@ -293,7 +308,7 @@ def wishlist_book(request, book_id):
         user_profile.wishlist_books.remove(book)
     else:
         user_profile.wishlist_books.add(book)
-    return redirect('user_profile')
+    return redirect('my_profile')
 
 @login_required
 def mark_book_read(request, book_id):
@@ -305,8 +320,8 @@ def mark_book_read(request, book_id):
         if book in user_profile.wishlist_books.all():
          user_profile.wishlist_books.remove(book)
 
-        return redirect('user_profile')
-    return redirect('user_profile')
+        return redirect('my_profile')
+    return redirect('my_profile')
 
 @login_required
 def currently_reading_books(request, book_id):
@@ -323,8 +338,8 @@ def currently_reading_books(request, book_id):
         if book in user_profile.read_books.all():
             user_profile.read_books.remove(book)
         
-        return redirect('user_profile')
-    return redirect('user_profile')
+        return redirect('my_profile')
+    return redirect('my_profile')
 
 
 @login_required
@@ -360,30 +375,36 @@ def log_reading_progress(request, book_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 
-from sklearn.preprocessing import LabelEncoder
-from sklearn.neighbors import NearestNeighbors
-import pandas as pd
-
 def recommend_books_knn(user, n_recommendations=5):
     books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages', 'published_date')  
     books_df = pd.DataFrame(books)
 
     books_df['average_rating'] = [Book.objects.get(id=book_id).average_rating() for book_id in books_df['id']]
+    books_df['published_year'] = pd.to_datetime(books_df['published_date'], errors='coerce').dt.year
 
-    books_df['published_year'] = pd.to_datetime(books_df['published_date'], errors='coerce').dt.year  # NOVO
+    # OneHotEncode kategorijskih značajki
+    encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    categorical_features = books_df[['genre', 'author']].fillna('Unknown')
+    encoded_cats = encoder.fit_transform(categorical_features)
+    encoded_cat_df = pd.DataFrame(encoded_cats, columns=encoder.get_feature_names_out(['genre', 'author']))
 
-    genre_encoder = LabelEncoder()
-    author_encoder = LabelEncoder()
-    
-    books_df['genre_encoded'] = genre_encoder.fit_transform(books_df['genre'])
-    books_df['author_encoded'] = author_encoder.fit_transform(books_df['author'])
+    # Spajanje podataka
+    books_df = books_df.reset_index(drop=True)
+    encoded_cat_df = encoded_cat_df.reset_index(drop=True)
+    books_df = pd.concat([books_df, encoded_cat_df], axis=1)
 
+    # Popunjavanje praznih vrijednosti
     books_df['average_rating'] = books_df['average_rating'].fillna(books_df['average_rating'].mean())
     books_df['number_of_pages'] = books_df['number_of_pages'].fillna(books_df['number_of_pages'].mean())
-    books_df['published_year'] = books_df['published_year'].fillna(books_df['published_year'].mean())  
+    books_df['published_year'] = books_df['published_year'].fillna(books_df['published_year'].mean())
 
+    # Skaliranje numeričkih značajki
+    numeric_features = books_df[['number_of_pages', 'average_rating', 'published_year']]
+    scaler = MinMaxScaler()
+    scaled_numeric = scaler.fit_transform(numeric_features)
 
-    features = books_df[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating', 'published_year']].values
+    # Spajanje svih značajki
+    features = np.hstack([encoded_cat_df.values, scaled_numeric])
 
     try:
         user_profile = UserProfile.objects.get(user=user)
@@ -395,11 +416,14 @@ def recommend_books_knn(user, n_recommendations=5):
     if not read_books:
         return Book.objects.all().order_by('?')[:n_recommendations]
 
-    read_books_data = books_df[books_df['id'].isin(read_books_ids)]
-    read_books_features = read_books_data[['genre_encoded', 'author_encoded', 'number_of_pages', 'average_rating', 'published_year']].values 
+    # Podaci o pročitanim knjigama
+    read_books_mask = books_df['id'].isin(read_books_ids)
+    read_books_features = features[read_books_mask]
+
     total_samples = len(books_df)
     n_neighbors = min(n_recommendations + len(read_books_ids), total_samples)
 
+    # Treniraj KNN model
     knn = NearestNeighbors(n_neighbors=n_neighbors, metric='euclidean')
     knn.fit(features)
 
@@ -410,9 +434,12 @@ def recommend_books_knn(user, n_recommendations=5):
             book_id = books_df.iloc[idx]['id']
             if book_id not in read_books_ids:
                 recommendations.add(book_id)
+
+    # Ako nema dovoljno preporuka, dodaj nasumične
     if len(recommendations) < n_recommendations:
         extra_books = Book.objects.exclude(id__in=read_books_ids).exclude(id__in=recommendations).order_by('?')[:n_recommendations - len(recommendations)]
         recommendations.update(extra_books.values_list('id', flat=True))
+
     recommended_books = Book.objects.filter(id__in=list(recommendations)[:n_recommendations])
     return recommended_books
 

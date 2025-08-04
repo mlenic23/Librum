@@ -28,7 +28,7 @@ class Book(models.Model):
     author = models.CharField(max_length=100)
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
     cover_image = models.ImageField(upload_to='books/covers')
-    number_of_pages = models.PositiveBigIntegerField(null=True, blank=True)
+    number_of_pages = models.PositiveIntegerField(null=True, blank=True)
     famous_quote = models.TextField(null=True, blank=True)
     summary = models.TextField(null=True, blank=True)
     published_date = models.DateField(null=True, blank=True)

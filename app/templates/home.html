@@ -11,7 +11,11 @@
         <p class="quote-text">
                 Are you ready to meet your next best friend? 
         </p>
-        <a href="{% url 'book_list' %}" class="explore-btn">Explore Our Books</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'book_list' %}" class="explore-btn">Explore Our Books</a>
+        {% else %}
+            <a href="{% url 'login' %}" class="explore-btn">Explore Our Books</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
