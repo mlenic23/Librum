@@ -5,7 +5,8 @@ from .models import (
     Review,
     ReviewLike,
     UserProfile,
-    ReadingProgress
+    ReadingProgress,
+    Author
 )
 
 admin.site.register(Book)
@@ -14,3 +15,4 @@ admin.site.register(Review)
 admin.site.register(ReviewLike)
 admin.site.register(UserProfile)
 admin.site.register(ReadingProgress)
+admin.site.register(Author)

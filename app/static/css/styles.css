@@ -1036,6 +1036,7 @@ input[type="number"] {
     background-color: #6e4b3a;
     border-radius: 50px;
     border: 2px solid #6e4b3a;
+    margin-bottom:15px;
     color: #c8b19e;
     font-size: 1em;
     cursor: pointer;
@@ -1317,4 +1318,10 @@ input[type="number"] {
 ::selection {
   background-color: #6e4b3a; 
   color: #c8b19e;              
+}
+
+.author-info{
+    font-size: 1em;
+    color:white;
+    font-style: italic;
 }

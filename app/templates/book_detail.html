@@ -17,7 +17,9 @@
             <div class="book-detail-right">
                 <h1 class="book-title">{{ book.title }}</h1>
                 <h3 class="book-author">
-                    <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">{{ book.author }}</span>
+                    <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">
+                        {{ book.author.name }} {{ book.author.surname }}
+                    </span>
                 </h3>
                 <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
                 <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
@@ -71,8 +73,6 @@
                         {% endfor %}
                     </div>
                 </form>
-            {% else %}
-                <p class="login-to-rate"><a href="{% url 'login' %}">Log in</a> to rate this book.</p>
             {% endif %}
             <div class="average-rating-text">
                 Average: <span class="average-rating">{{ book.average_rating }}</span>/5
@@ -120,17 +120,22 @@
     <div class="review-modal-content">
         <span class="close-modal" id="closeSummaryModal">×</span>
         <h2>{{ book.title }}</h2>
-        <p>{{ book.summary }}</p>
+        <p class="author-info">{{ book.summary }}</p>
     </div>
 </div>
 
 <div class="review-modal" id="authorModal">
     <div class="review-modal-content">
         <span class="close-modal" id="closeAuthorModal">×</span>
-        <h2><strong>{{book.author}}</strong></h2>
-        <p>{{book.author_summary}}</p>
+        <h2><strong>{{ book.author.name }} {{book.author.surname}}</strong></h2><br>
+        <p class="author-info"><strong>Born: </strong>{{book.author.born}} - {{book.author.place}}</p><br>
+        <p class="author-info"><strong>Occupation: </strong>{{book.author.occupation}}</p><br>
+        <p class="author-info"><strong>Genre: </strong>{{ book.author.genre }}</p><br>
+        <p class="author-info"><strong>Notable works: </strong>{{ book.author.notable_works }}</p><br>
+        <p class="author-info"><strong>Achievements: </strong>{{book.author.achievements}}</p>
     </div>
 </div>
+
 
 <div class="review-modal" id="reviewModal">
     <div class="review-modal-content">

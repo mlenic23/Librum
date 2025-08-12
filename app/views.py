@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django import forms
-from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress
+from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress, Author
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
 from django.db.models import Q
 from django.core.paginator import Paginator
@@ -68,7 +68,8 @@ def search_books(request):
     if query:
         full_query = query.lower()
         full_condition = (
-            Q(author__icontains=full_query) |
+            Q(author__name__icontains=full_query) |
+            Q(author__surname__icontains=full_query) |
             Q(title__icontains=full_query) |
             Q(genre__icontains=full_query)
         )
@@ -93,7 +94,8 @@ def search_books(request):
 
                 elif not any(char.isdigit() for char in term):
                     text_condition = (
-                        Q(author__icontains=term) |
+                        Q(author__name__icontains=term) |
+                        Q(author__surname__icontains=term) |
                         Q(title__icontains=term) |
                         Q(genre__icontains=term)
                     )
@@ -105,6 +107,7 @@ def search_books(request):
         'books': books,
         'query': query,
     }
+
 
 
 def filter_books(request, search_data=None):
@@ -157,7 +160,7 @@ def filter_books(request, search_data=None):
     selected_author = request.GET.get('author')
 
     if selected_author:
-        books = books.filter(author=selected_author)
+        books = books.filter(author_id=selected_author)
 
     sort = request.GET.get('sort')
     books = books.annotate(avg_rating=Avg('ratings__rating'))
@@ -176,7 +179,7 @@ def filter_books(request, search_data=None):
     page_obj = paginator.get_page(page_number)
 
     all_genres = [genre[1] for genre in Book.GENRE_CHOICES]
-    all_authors = Book.objects.values_list('author', flat=True).distinct()
+    all_authors = Author.objects.all().order_by('surname', 'name')
 
     return render(request, 'book_list.html', {
         'books': page_obj.object_list,
@@ -272,8 +275,14 @@ def user_profile(request, user_id):
     total_pages = profile.read_books.aggregate(total=Sum('number_of_pages'))['total'] or 0
     genre_counts = profile.read_books.values('genre').annotate(count=Count('id')).order_by('-count').first()
     top_genre = genre_counts['genre'] if genre_counts else 'N/A'
-    author_counts = profile.read_books.values('author').annotate(count=Count('id')).order_by('-count').first()
-    top_author = author_counts['author'] if author_counts else 'N/A'
+    author_counts = (
+    profile.read_books
+    .values('author__id', 'author__name', 'author__surname')
+    .annotate(count=Count('id'))
+    .order_by('-count')
+    .first()
+    )
+    top_author = f"{author_counts['author__name']} {author_counts['author__surname']}" if author_counts else 'N/A'
 
     top_rated_books = (
         profile.read_books
@@ -376,34 +385,32 @@ def log_reading_progress(request, book_id):
 
 
 def recommend_books_knn(user, n_recommendations=5):
-    books = Book.objects.all().values('id', 'title', 'genre', 'author', 'number_of_pages', 'published_date')  
+    books = Book.objects.all().select_related('author').values(
+    'id', 'title', 'genre', 'author__name', 'author__surname', 'number_of_pages', 'published_date'
+    )  
     books_df = pd.DataFrame(books)
 
     books_df['average_rating'] = [Book.objects.get(id=book_id).average_rating() for book_id in books_df['id']]
     books_df['published_year'] = pd.to_datetime(books_df['published_date'], errors='coerce').dt.year
+    books_df['author'] = books_df['author__name'] + ' ' + books_df['author__surname']
 
-    # OneHotEncode kategorijskih značajki
-    encoder = OneHotEncoder(sparse=False, handle_unknown='ignore')
+    encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
     categorical_features = books_df[['genre', 'author']].fillna('Unknown')
     encoded_cats = encoder.fit_transform(categorical_features)
     encoded_cat_df = pd.DataFrame(encoded_cats, columns=encoder.get_feature_names_out(['genre', 'author']))
 
-    # Spajanje podataka
     books_df = books_df.reset_index(drop=True)
     encoded_cat_df = encoded_cat_df.reset_index(drop=True)
     books_df = pd.concat([books_df, encoded_cat_df], axis=1)
 
-    # Popunjavanje praznih vrijednosti
     books_df['average_rating'] = books_df['average_rating'].fillna(books_df['average_rating'].mean())
     books_df['number_of_pages'] = books_df['number_of_pages'].fillna(books_df['number_of_pages'].mean())
     books_df['published_year'] = books_df['published_year'].fillna(books_df['published_year'].mean())
 
-    # Skaliranje numeričkih značajki
     numeric_features = books_df[['number_of_pages', 'average_rating', 'published_year']]
     scaler = MinMaxScaler()
     scaled_numeric = scaler.fit_transform(numeric_features)
 
-    # Spajanje svih značajki
     features = np.hstack([encoded_cat_df.values, scaled_numeric])
 
     try:
@@ -416,14 +423,12 @@ def recommend_books_knn(user, n_recommendations=5):
     if not read_books:
         return Book.objects.all().order_by('?')[:n_recommendations]
 
-    # Podaci o pročitanim knjigama
     read_books_mask = books_df['id'].isin(read_books_ids)
     read_books_features = features[read_books_mask]
 
     total_samples = len(books_df)
     n_neighbors = min(n_recommendations + len(read_books_ids), total_samples)
 
-    # Treniraj KNN model
     knn = NearestNeighbors(n_neighbors=n_neighbors, metric='euclidean')
     knn.fit(features)
 
@@ -435,7 +440,6 @@ def recommend_books_knn(user, n_recommendations=5):
             if book_id not in read_books_ids:
                 recommendations.add(book_id)
 
-    # Ako nema dovoljno preporuka, dodaj nasumične
     if len(recommendations) < n_recommendations:
         extra_books = Book.objects.exclude(id__in=read_books_ids).exclude(id__in=recommendations).order_by('?')[:n_recommendations - len(recommendations)]
         recommendations.update(extra_books.values_list('id', flat=True))

@@ -66,13 +66,13 @@
             <input type="hidden" name="max_year" id="max-year-input" value="{{ max_year|default:2025 }}">
 
 
-            <label for="author" class="filter">Author:</label><br>
             <select name="author" id="author">
                 <option value="">All authors</option>
                 {% for author in authors %}
-                    <option value="{{ author }}" {% if author == selected_author %}selected{% endif %}>{{ author }}</option>
+                    <option value="{{ author.id }}" {% if author.id == selected_author %}selected{% endif %}>{{ author.name }} {{ author.surname }}</option>
                 {% endfor %}
             </select><br><br>
+
 
             <button type="submit" class="filter-button">Apply</button>
         </form>
@@ -91,7 +91,7 @@
                     <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover">
                 </a>
                 <h2>{{ book.title }}</h2>
-                <p>{{ book.author }}</p>             
+                <p>{{ book.author.name }} {{ book.author.surname }}</p>            
             </div>
         {% endfor %}
 
