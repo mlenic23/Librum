@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.getElementById("modalBookId").value = bookId;
         document.getElementById("pagesRead").max = numberOfPages;
 
-        fetch(`/auth/books/${bookId}/total-progress/?t=${Date.now()}`)
+        fetch(`/books/${bookId}/total-progress/?t=${Date.now()}`)
             .then(response => response.json())
             .then(data => {
                 updateProgressBar(data.total_read, numberOfPages);
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const pagesRead = document.getElementById('pagesRead').value;
             const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            fetch(`/auth/books/${bookId}/log-progress/`, {
+            fetch(`/books/${bookId}/log-progress/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (data.status === 'success') {
                     document.getElementById('pagesRead').value = '';
                     // Refresh progress bar
-                    fetch(`/auth/books/${bookId}/total-progress/?t=${Date.now()}`)
+                    fetch(`/books/${bookId}/total-progress/?t=${Date.now()}`)
                         .then(response => response.json())
                         .then(data => {
                             const totalPages = document.getElementById('pagesRead').max;
