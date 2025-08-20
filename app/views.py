@@ -454,7 +454,6 @@ def total_reading_progress(request, book_id):
     total_read = ReadingProgress.objects.filter(user=request.user, book_id=book_id).aggregate(total=Sum('pages_read'))['total'] or 0
     return JsonResponse({'total_read': total_read})
 
-
 @login_required
 def upload_profile_image(request):
     if request.method == 'POST':
@@ -462,5 +461,5 @@ def upload_profile_image(request):
         if 'image' in request.FILES:
             profile.image = request.FILES['image']
             profile.save()
-        return redirect('user_profile') 
-    return redirect('user_profile')
+        return redirect('user_profile', user_id=request.user.id)
+    return redirect('user_profile', user_id=request.user.id)

@@ -30,11 +30,11 @@ class Book(models.Model):
         ('thriller', 'Thriller'),
         ('religion', 'Religion'),
         ('crime', 'Crime'),
-        ('action', 'Action'),
+        ('young adult', 'Young Adult'),
         ('humor', 'Humor'),
         ('adventure', 'Adventure'),
         ('autobiography', 'Autobiography'),
-        ('cookbook', 'Cookbook'),
+        ('science', 'Science'),
         ('psychology', 'Psychology'),
         ('other', 'Other')
     ]
