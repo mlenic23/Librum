@@ -79,8 +79,8 @@ def search_books(request):
         if matched_books.exists():
             books = matched_books.filter(published_date__isnull=False)
         else:
-            terms = full_query.split()
             conditions = Q()
+            terms = full_query.split()
 
             for term in terms:
 
@@ -110,12 +110,9 @@ def search_books(request):
 
 
 
-def filter_books(request, search_data=None):
+def filter_books(request, search_data):
 
-    if search_data is None:
-        books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
-    else:
-        books = search_data['books']
+    books = search_data['books']
 
     min_year = request.GET.get('min_year')
     max_year = request.GET.get('max_year')
@@ -193,7 +190,7 @@ def filter_books(request, search_data=None):
         'max_year': max_year,
         'selected_author': selected_author,
         'authors': all_authors,
-        'query': search_data['query'] if search_data else '',
+        'query': search_data['query'],
     })
 
 def book_list(request):

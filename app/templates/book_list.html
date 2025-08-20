@@ -18,65 +18,63 @@
     </div>
 
     <div class="filter-box">
-        <form method="GET" action="" class="genre-filter-form">
-   
-            <div class="sort-box">
-                <label for="sort">Sort by:</label>
-                <select name="sort" id="sort" class="sort-select">
-                    <option value="asc" {% if request.GET.sort == 'asc' %}selected{% endif %}>Title Ascending</option>
-                    <option value="desc" {% if request.GET.sort == 'desc' %}selected{% endif %}>Title Descending</option>
-                    <option value="rating_desc" {% if request.GET.sort_rating == 'rating_desc' %}selected{% endif %}>Highest Rating</option>
-                    <option value="rating_asc" {% if request.GET.sort_rating == 'rating_asc' %}selected{% endif %}>Lowest Rating</option> 
-                </select>
-            </div>
-
-       
-            <label for="genres">Filter by genre:</label><br>
-            <div class="genre-columns">
-                <div class="genre-column">
-                    {% for genre in genres|slice:":8" %}
-                        <label class="genre-checkbox">
-                            <input type="checkbox" name="genre" value="{{ genre }}"
-                            {% if genre in selected_genres %}checked{% endif %}>
-                            {{ genre }}
-                        </label>
-                    {% endfor %}
-                </div>
-                <div class="genre-column">
-                    {% for genre in genres|slice:"8:" %}
-                        <label class="genre-checkbox">
-                            <input type="checkbox" name="genre" value="{{ genre }}"
-                            {% if genre in selected_genres %}checked{% endif %}>
-                            {{ genre }}
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-
-          
-            <label for="min_pages" class="filter">Page count:</label><br>
-            <input type="number" name="min_pages" placeholder="Min pages" value="{{ min_pages }}"><br>
-            <input type="number" name="max_pages" placeholder="Max pages" value="{{ max_pages }}"><br>
-
+    <form method="GET" action="" class="genre-filter-form">
+        {% if request.GET.q %}
+            <input type="hidden" name="q" value="{{ request.GET.q }}">
+        {% endif %}
         
-            <label for="year-slider" class="filter">Publication year:</label>
-            <div id="year-slider" style="margin: 15px 0;"></div>
+        <div class="sort-box">
+            <label for="sort">Sort by:</label>
+            <select name="sort" id="sort" class="sort-select">
+                <option value="asc" {% if request.GET.sort == 'asc' %}selected{% endif %}>Title Ascending</option>
+                <option value="desc" {% if request.GET.sort == 'desc' %}selected{% endif %}>Title Descending</option>
+                <option value="rating_desc" {% if request.GET.sort_rating == 'rating_desc' %}selected{% endif %}>Highest Rating</option>
+                <option value="rating_asc" {% if request.GET.sort_rating == 'rating_asc' %}selected{% endif %}>Lowest Rating</option> 
+            </select>
+        </div>
 
-            <input type="hidden" name="min_year" id="min-year-input" value="{{ min_year|default:1000 }}">
-            <input type="hidden" name="max_year" id="max-year-input" value="{{ max_year|default:2025 }}">
-
-
-            <select name="author" id="author">
-                <option value="">All authors</option>
-                {% for author in authors %}
-                    <option value="{{ author.id }}" {% if author.id == selected_author %}selected{% endif %}>{{ author.name }} {{ author.surname }}</option>
+        <label for="genres">Filter by genre:</label><br>
+        <div class="genre-columns">
+            <div class="genre-column">
+                {% for genre in genres|slice:":8" %}
+                    <label class="genre-checkbox">
+                        <input type="checkbox" name="genre" value="{{ genre }}"
+                        {% if genre in selected_genres %}checked{% endif %}>
+                        {{ genre }}
+                    </label>
                 {% endfor %}
-            </select><br><br>
+            </div>
+            <div class="genre-column">
+                {% for genre in genres|slice:"8:" %}
+                    <label class="genre-checkbox">
+                        <input type="checkbox" name="genre" value="{{ genre }}"
+                        {% if genre in selected_genres %}checked{% endif %}>
+                        {{ genre }}
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
 
+        <label for="min_pages" class="filter">Page count:</label><br>
+        <input type="number" name="min_pages" placeholder="Min pages" value="{{ min_pages }}"><br>
+        <input type="number" name="max_pages" placeholder="Max pages" value="{{ max_pages }}"><br>
 
-            <button type="submit" class="filter-button">Apply</button>
-        </form>
-    </div>
+        <label for="year-slider" class="filter">Publication year:</label>
+        <div id="year-slider" style="margin: 15px 0;"></div>
+
+        <input type="hidden" name="min_year" id="min-year-input" value="{{ min_year|default:1000 }}">
+        <input type="hidden" name="max_year" id="max-year-input" value="{{ max_year|default:2025 }}">
+
+        <select name="author" id="author">
+            <option value="">All authors</option>
+            {% for author in authors %}
+                <option value="{{ author.id }}" {% if author.id == selected_author %}selected{% endif %}>{{ author.name }} {{ author.surname }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <button type="submit" class="filter-button">Apply</button>
+    </form>
+</div>
 
     <div class="bookQuote">
         <h2>"Too many books, not enough hours,<br><span style="display:block; padding-left: 30px;">but each one worth the read."</span></h2>
@@ -97,13 +95,13 @@
 
         <div class="pagination">
             {% if page_obj.has_previous %}
-                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">First</a>
-                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Previous</a>
+                <a href="?page=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}{% if min_pages %}&min_pages={{ min_pages }}{% endif %}{% if max_pages %}&max_pages={{ max_pages }}{% endif %}{% if min_year %}&min_year={{ min_year }}{% endif %}{% if max_year %}&max_year={{ max_year }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}">First</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}{% if min_pages %}&min_pages={{ min_pages }}{% endif %}{% if max_pages %}&max_pages={{ max_pages }}{% endif %}{% if min_year %}&min_year={{ min_year }}{% endif %}{% if max_year %}&max_year={{ max_year }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}">Previous</a>
             {% endif %}
-        
+
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}">Last</a>
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}{% if min_pages %}&min_pages={{ min_pages }}{% endif %}{% if max_pages %}&max_pages={{ max_pages }}{% endif %}{% if min_year %}&min_year={{ min_year }}{% endif %}{% if max_year %}&max_year={{ max_year }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}{% for g in selected_genres %}&genre={{ g }}{% endfor %}{% if min_pages %}&min_pages={{ min_pages }}{% endif %}{% if max_pages %}&max_pages={{ max_pages }}{% endif %}{% if min_year %}&min_year={{ min_year }}{% endif %}{% if max_year %}&max_year={{ max_year }}{% endif %}{% if selected_author %}&author={{ selected_author }}{% endif %}">Last</a>
             {% endif %}
         </div>
                
@@ -115,5 +113,4 @@
 <script src="{% static 'js/slider.js' %}"></script>
 
 {% endblock %}
-
 
