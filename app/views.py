@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django import forms
 from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress, Author
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
+from django.db.models import Min, Max
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
@@ -61,47 +62,38 @@ def clean_email(self):
         raise forms.ValidationError("Email is already in use.")
     return email
 
+
 def search_books(request):
     query = request.GET.get('q', '').strip()
     books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
 
+    years = Book.objects.aggregate(
+        min_year=Min('published_date'),
+        max_year=Max('published_date')
+    )
+    min_year = years['min_year'].year if years['min_year'] else None
+    max_year = years['max_year'].year if years['max_year'] else None
+
     if query:
-        full_query = query.lower()
-        full_condition = (
-            Q(author__name__icontains=full_query) |
-            Q(author__surname__icontains=full_query) |
-            Q(title__icontains=full_query) |
-            Q(genre__icontains=full_query)
-        )
+        terms = query.lower().split()
+        conditions = Q()
 
-        matched_books = books.filter(full_condition)
+        for term in terms:
+            if term.isdigit() and min_year and max_year and min_year <= int(term) <= max_year:
+                conditions &= Q(published_year=int(term))
+            elif term.isdigit():
+                pages = int(term)
+                conditions &= Q(number_of_pages__gte=max(0, pages - 50)) & Q(number_of_pages__lte=pages + 50)
+            else:
+                text_condition = (
+                    Q(author__name__icontains=term) |
+                    Q(author__surname__icontains=term) |
+                    Q(title__icontains=term) |
+                    Q(genre__icontains=term)
+                )
+                conditions &= text_condition
 
-        if matched_books.exists():
-            books = matched_books.filter(published_date__isnull=False)
-        else:
-            conditions = Q()
-            terms = full_query.split()
-
-            for term in terms:
-
-                if term.isdigit() and 1800 <= int(term) <= 2025:
-                    year = int(term)
-                    conditions &= Q(published_year=year)
-
-                elif term.isdigit():
-                    pages = int(term)
-                    conditions &= Q(number_of_pages__gte=max(0, pages - 50)) & Q(number_of_pages__lte=pages + 50)
-
-                elif not any(char.isdigit() for char in term):
-                    text_condition = (
-                        Q(author__name__icontains=term) |
-                        Q(author__surname__icontains=term) |
-                        Q(title__icontains=term) |
-                        Q(genre__icontains=term)
-                    )
-                    conditions &= text_condition
-
-            books = books.filter(conditions).filter(published_date__isnull=False)
+        books = books.filter(conditions).filter(published_date__isnull=False)
 
     return {
         'books': books,
@@ -110,67 +102,74 @@ def search_books(request):
 
 
 
+
+
+
 def filter_books(request, search_data):
+    # Dohvati queryset iz search_books i odmah anotiraj published_year
+    books = search_data['books'].annotate(published_year=ExtractYear('published_date'))
 
-    books = search_data['books']
+    # Dohvati min i max godinu iz svih knjiga (ne samo iz filtriranih)
+    years = Book.objects.aggregate(
+        min_year=Min('published_date'),
+        max_year=Max('published_date')
+    )
+    min_year_db = years['min_year'].year if years['min_year'] else None
+    max_year_db = years['max_year'].year if years['max_year'] else None
 
+    # Dohvati min i max year iz GET parametara, ako postoje
     min_year = request.GET.get('min_year')
     max_year = request.GET.get('max_year')
 
+    # Ako nisu uneseni, koristi vrijednosti iz baze
+    min_year = int(min_year) if min_year else min_year_db
+    max_year = int(max_year) if max_year else max_year_db
+
+    # Primijeni filter na published_year
     if min_year:
         books = books.filter(published_year__gte=min_year)
-
     if max_year:
         books = books.filter(published_year__lte=max_year)
 
+    # Filter po žanru
     selected_genres = request.GET.getlist('genre')
-
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
         db_genres = [genre_map.get(genre) for genre in selected_genres if genre in genre_map]
         if db_genres:
             books = books.filter(genre__in=db_genres)
 
+    # Filter po broju stranica
     min_pages = request.GET.get('min_pages')
     max_pages = request.GET.get('max_pages')
-
-    if min_pages and max_pages:
-        try:
+    try:
+        if min_pages:
             min_pages = int(min_pages)
+            books = books.filter(number_of_pages__gte=min_pages)
+        if max_pages:
             max_pages = int(max_pages)
-            if min_pages > max_pages:
-                min_pages, max_pages = max_pages, min_pages  
-        except ValueError:
-            min_pages = max_pages = None  
+            books = books.filter(number_of_pages__lte=max_pages)
+    except ValueError:
+        pass  # ignoriraj ako nije validan broj
 
-    elif min_pages:
-        min_pages = int(min_pages)
-    elif max_pages:
-        max_pages = int(max_pages)
-
-    if min_pages:
-        books = books.filter(number_of_pages__gte=min_pages)
-
-    if max_pages:
-        books = books.filter(number_of_pages__lte=max_pages)
-
+    # Filter po autoru
     selected_author = request.GET.get('author')
-
     if selected_author:
         books = books.filter(author_id=selected_author)
 
+    # Sortiranje
     sort = request.GET.get('sort')
     books = books.annotate(avg_rating=Avg('ratings__rating'))
-
     if sort == 'asc':
         books = books.order_by('title')
     elif sort == 'desc':
         books = books.order_by('-title')
     elif sort == 'rating_desc':
-         books = books.order_by('-avg_rating')
+        books = books.order_by('-avg_rating')
     elif sort == 'rating_asc':
         books = books.order_by('avg_rating')
- 
+
+    # Paginacija
     paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)

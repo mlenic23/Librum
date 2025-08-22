@@ -62,8 +62,9 @@
         <label for="year-slider" class="filter">Publication year:</label>
         <div id="year-slider" style="margin: 15px 0;"></div>
 
-        <input type="hidden" name="min_year" id="min-year-input" value="{{ min_year|default:1000 }}">
-        <input type="hidden" name="max_year" id="max-year-input" value="{{ max_year|default:2025 }}">
+        <input type="hidden" name="min_year" id="min-year-input" value="{{ min_year }}">
+        <input type="hidden" name="max_year" id="max-year-input" value="{{ max_year }}">
+
 
         <select name="author" id="author">
             <option value="">All authors</option>
