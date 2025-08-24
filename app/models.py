@@ -18,7 +18,6 @@ class Author(models.Model):
     def __str__(self):
         return f"{self.name} {self.surname}"
     
-    
 class Book(models.Model):
     GENRE_CHOICES = [
         ('fantasy', 'Fantasy'),
@@ -50,11 +49,9 @@ class Book(models.Model):
     def __str__(self):
         return self.title
     
-
     def average_rating(self):
         avg = self.ratings.aggregate(Avg('rating'))['rating__avg']
         return round(avg, 1) if avg is not None else 0
-
 
     def user_rating(self, user):
         rating = self.ratings.filter(user=user).first()
@@ -70,7 +67,6 @@ class BookRating(models.Model):
 
     def __str__(self):
         return f"{self.user.username} rated {self.book.title} ({self.rating})"
-
     
 class Review(models.Model):
     book = models.ForeignKey('Book', on_delete=models.CASCADE, related_name='reviews')
