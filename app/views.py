@@ -132,6 +132,7 @@ def filter_books(request, search_data):
         pass 
 
     selected_author = request.GET.get('author')
+
     if selected_author:
         books = books.filter(author__id=selected_author)
 
@@ -253,7 +254,14 @@ def user_profile(request, user_id):
     .order_by('-count')
     .first()
     )
-    top_author = f"{author_counts['author__name']} {author_counts['author__surname']}" if author_counts else 'N/A'
+    top_author_qs = Book.objects.values('author__id', 'author__name', 'author__surname') \
+                    .annotate(num_books=Count('id')) \
+                    .order_by('-num_books').first()
+
+    if top_author_qs:
+        top_author = f"{top_author_qs['author__name']} {top_author_qs['author__surname']}"
+    else:
+        top_author = 'N/A'
 
     top_rated_books = (
         profile.read_books
