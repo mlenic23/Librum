@@ -133,7 +133,7 @@ def filter_books(request, search_data):
 
     selected_author = request.GET.get('author')
     if selected_author:
-        books = books.filter(author_id=selected_author)
+        books = books.filter(author__id=selected_author)
 
     sort = request.GET.get('sort')
     books = books.annotate(avg_rating=Avg('ratings__rating'))
