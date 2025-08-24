@@ -18,9 +18,13 @@
                     <h1 class="book-title">{{ book.title }}</h1>
 
                     <h3 class="book-author">
-                        <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">
-                            {{ book.author.name }} {{ book.author.surname }}
-                        </span>
+                        {% for author in book.author.all %}
+                            <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">
+                                {{ author.name }} {{ author.surname }}
+                            </span>{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            None
+                        {% endfor %}
                     </h3>
 
                     <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
@@ -141,15 +145,22 @@
         </div>
 
         <div class="review-modal" id="authorModal">
-            <div class="review-modal-content">
-                <span class="close-modal" id="closeAuthorModal">×</span>
-                <h2><strong>{{ book.author.name }} {{ book.author.surname }}</strong></h2><br>
-                <p class="author-info"><strong>Born: </strong>{{ book.author.born }} - {{ book.author.place }}</p><br>
-                <p class="author-info"><strong>Occupation: </strong>{{ book.author.occupation }}</p><br>
-                <p class="author-info"><strong>Genre: </strong>{{ book.author.genre }}</p><br>
-                <p class="author-info"><strong>Notable works: </strong>{{ book.author.notable_works }}</p><br>
-                <p class="author-info"><strong>Achievements: </strong>{{ book.author.achievements }}</p>
-            </div>
+        <div class="review-modal-content">
+            <span class="close-modal" id="closeAuthorModal">×</span>
+
+            {% for author in book.author.all %}
+                <h2><strong>{{ author.name }} {{ author.surname }}</strong></h2><br>
+                <p class="author-info"><strong>Born: </strong>{{ author.born }} - {{ author.place }}</p><br>
+                <p class="author-info"><strong>Occupation: </strong>{{ author.occupation }}</p><br>
+                <p class="author-info"><strong>Genre: </strong>{{ author.genre }}</p><br>
+                <p class="author-info"><strong>Notable works: </strong>{{ author.notable_works }}</p><br>
+                <p class="author-info"><strong>Achievements: </strong>{{ author.achievements }}</p>
+                {% if not forloop.last %}<hr>{% endif %}
+            {% empty %}
+                <p>No authors available.</p>
+            {% endfor %}
+
+        </div>
         </div>
 
         <div class="review-modal" id="reviewModal">

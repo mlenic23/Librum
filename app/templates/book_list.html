@@ -86,7 +86,12 @@
                     <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-cover">
                 </a>
                 <h2>{{ book.title }}</h2>
-                <p>{{ book.author.name }} {{ book.author.surname }}</p>
+                <p>{% for author in book.author.all %}
+                                {{ author.name }} {{ author.surname }}
+                            </span>{% if not forloop.last %}, {% endif %}
+                        {% empty %}
+                            None
+                        {% endfor %}</p>
             </div>
         {% endfor %}
 
