@@ -1,28 +1,20 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django import forms
 from .models import Book, Review, ReviewLike, BookRating, UserProfile, ReadingProgress, Author
+from django import forms
 from .forms import CustomUserCreationForm, ReviewForm, RatingForm
-from django.db.models import Min, Max
-from django.db.models import Q
+from django.db.models import Min, Max, Avg, Sum, Count, Q
 from django.core.paginator import Paginator
-from django.contrib.auth.decorators import login_required
 from sklearn.neighbors import NearestNeighbors
-from sklearn.preprocessing import OneHotEncoder
-
+from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from django.http import JsonResponse
-import pandas as pd
-from django.db.models import Avg, Sum, Count
 from django.utils import timezone
 from django.db.models.functions import ExtractYear
-
-from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
-from sklearn.neighbors import NearestNeighbors
 import pandas as pd
 import numpy as np
-
 
 def home(request):
     return render(request, 'home.html')
@@ -62,7 +54,6 @@ def clean_email(self):
         raise forms.ValidationError("Email is already in use.")
     return email
 
-
 def search_books(request):
     query = request.GET.get('q', '').strip()
     books = Book.objects.all().annotate(published_year=ExtractYear('published_date'))
@@ -100,16 +91,9 @@ def search_books(request):
         'query': query,
     }
 
-
-
-
-
-
 def filter_books(request, search_data):
-    # Dohvati queryset iz search_books i odmah anotiraj published_year
     books = search_data['books'].annotate(published_year=ExtractYear('published_date'))
 
-    # Dohvati min i max godinu iz svih knjiga (ne samo iz filtriranih)
     years = Book.objects.aggregate(
         min_year=Min('published_date'),
         max_year=Max('published_date')
@@ -117,21 +101,17 @@ def filter_books(request, search_data):
     min_year_db = years['min_year'].year if years['min_year'] else None
     max_year_db = years['max_year'].year if years['max_year'] else None
 
-    # Dohvati min i max year iz GET parametara, ako postoje
     min_year = request.GET.get('min_year')
     max_year = request.GET.get('max_year')
 
-    # Ako nisu uneseni, koristi vrijednosti iz baze
     min_year = int(min_year) if min_year else min_year_db
     max_year = int(max_year) if max_year else max_year_db
 
-    # Primijeni filter na published_year
     if min_year:
         books = books.filter(published_year__gte=min_year)
     if max_year:
         books = books.filter(published_year__lte=max_year)
 
-    # Filter po žanru
     selected_genres = request.GET.getlist('genre')
     if selected_genres:
         genre_map = {display: value for value, display in Book.GENRE_CHOICES}
@@ -139,7 +119,6 @@ def filter_books(request, search_data):
         if db_genres:
             books = books.filter(genre__in=db_genres)
 
-    # Filter po broju stranica
     min_pages = request.GET.get('min_pages')
     max_pages = request.GET.get('max_pages')
     try:
@@ -150,14 +129,12 @@ def filter_books(request, search_data):
             max_pages = int(max_pages)
             books = books.filter(number_of_pages__lte=max_pages)
     except ValueError:
-        pass  # ignoriraj ako nije validan broj
+        pass 
 
-    # Filter po autoru
     selected_author = request.GET.get('author')
     if selected_author:
         books = books.filter(author_id=selected_author)
 
-    # Sortiranje
     sort = request.GET.get('sort')
     books = books.annotate(avg_rating=Avg('ratings__rating'))
     if sort == 'asc':
@@ -169,7 +146,6 @@ def filter_books(request, search_data):
     elif sort == 'rating_asc':
         books = books.order_by('avg_rating')
 
-    # Paginacija
     paginator = Paginator(books, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -192,10 +168,10 @@ def filter_books(request, search_data):
         'query': search_data['query'],
     })
 
+@login_required
 def book_list(request):
     search_data = search_books(request)
     return filter_books(request, search_data)
-
 
 @login_required
 def book_detail(request, book_id):
@@ -248,7 +224,6 @@ def book_detail(request, book_id):
         'rating_range': [5, 4, 3, 2, 1],
     })
 
-
 @login_required
 def toggle_review_like(request, review_id):
     review = get_object_or_404(Review, id=review_id)
@@ -300,7 +275,6 @@ def user_profile(request, user_id):
         'top_rated_books': top_rated_books,
     })
 
-
 @login_required
 def my_profile_redirect(request):
     return redirect('user_profile', user_id=request.user.id)
@@ -320,10 +294,15 @@ def mark_book_read(request, book_id):
     if request.method == "POST":
         user_profile = get_object_or_404(UserProfile, user=request.user)
         book = get_object_or_404(Book, id=book_id)
+
         if book not in user_profile.read_books.all():
-         user_profile.read_books.add(book)
+            user_profile.read_books.add(book)
+
         if book in user_profile.wishlist_books.all():
-         user_profile.wishlist_books.remove(book)
+            user_profile.wishlist_books.remove(book)
+
+        if book in user_profile.currently_reading_books.all():
+            user_profile.currently_reading_books.remove(book)
 
         return redirect('my_profile')
     return redirect('my_profile')
@@ -345,7 +324,6 @@ def currently_reading_books(request, book_id):
         
         return redirect('my_profile')
     return redirect('my_profile')
-
 
 @login_required
 def log_reading_progress(request, book_id):
@@ -379,6 +357,20 @@ def log_reading_progress(request, book_id):
     
     return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
+@login_required
+def total_reading_progress(request, book_id):
+    total_read = ReadingProgress.objects.filter(user=request.user, book_id=book_id).aggregate(total=Sum('pages_read'))['total'] or 0
+    return JsonResponse({'total_read': total_read})
+
+@login_required
+def upload_profile_image(request):
+    if request.method == 'POST':
+        profile = request.user.userprofile
+        if 'image' in request.FILES:
+            profile.image = request.FILES['image']
+            profile.save()
+        return redirect('user_profile', user_id=request.user.id)
+    return redirect('user_profile', user_id=request.user.id)
 
 def recommend_books_knn(user, n_recommendations=5):
     books = Book.objects.all().select_related('author').values(
@@ -443,19 +435,3 @@ def recommend_books_knn(user, n_recommendations=5):
     recommended_books = Book.objects.filter(id__in=list(recommendations)[:n_recommendations])
     return recommended_books
 
-
-
-@login_required
-def total_reading_progress(request, book_id):
-    total_read = ReadingProgress.objects.filter(user=request.user, book_id=book_id).aggregate(total=Sum('pages_read'))['total'] or 0
-    return JsonResponse({'total_read': total_read})
-
-@login_required
-def upload_profile_image(request):
-    if request.method == 'POST':
-        profile = request.user.userprofile
-        if 'image' in request.FILES:
-            profile.image = request.FILES['image']
-            profile.save()
-        return redirect('user_profile', user_id=request.user.id)
-    return redirect('user_profile', user_id=request.user.id)

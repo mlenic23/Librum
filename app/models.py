@@ -39,7 +39,7 @@ class Book(models.Model):
         ('other', 'Other')
     ]
     title = models.CharField(max_length=200)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
+    authors = models.ManyToManyField(Author, related_name='books')
     genre = models.CharField(max_length=50, choices=GENRE_CHOICES)
     cover_image = models.ImageField(upload_to='books/covers')
     number_of_pages = models.PositiveIntegerField(null=True, blank=True)

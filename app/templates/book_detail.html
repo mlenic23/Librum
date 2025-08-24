@@ -1,155 +1,171 @@
 {% extends 'base.html' %}
 {% load static %}
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-
 {% block title %}{{ book.title }}{% endblock %}
 
 {% block content %}
 <div class="book-details-flex">
-<div id="contentWrapper">
-    <div class="book-detail-container">
-        <div class="book-detail-card">
-            <div class="book-detail-left">
-                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-detail-image">
-            </div>
-            <div class="book-detail-right">
-                <h1 class="book-title">{{ book.title }}</h1>
-                <h3 class="book-author">
-                    <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">
-                        {{ book.author.name }} {{ book.author.surname }}
-                    </span>
-                </h3>
-                <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
-                <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
-                <p class="book-genre"><strong>Published:</strong> {{ book.published_date|date:"F j, Y" }}</p>
-                <button id="openSummaryModal" class="review-submit">Show summary</button>
-                <div class="action-icons">
-                    <a href="{% url 'wishlist_book' book.id %}" class="action-icon favorite-icon {% if book in user.userprofile.wishlist_books.all %}filled{% endif %}" title="Add to Wishlist">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                        </svg>
-                    </a>
-                    <a href="{% url 'mark_book_read' book.id %}" class="action-icon read-icon {% if book in user.userprofile.read_books.all %}filled{% endif %}" title="Mark as Read">
-                        <svg class="icon" viewBox="0 0 24 24">
-                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                        </svg>
-                    </a>
-                    <a href="{% url 'currently_reading_books' book.id %}"
-                        class="action-icon currently-reading-icon {% if book in user.userprofile.currently_reading_books.all %}filled{% endif %}"
-                        title="Add to Currently Reading">
+    <div id="contentWrapper">
+
+        <div class="book-detail-container">
+            <div class="book-detail-card">
+
+                <div class="book-detail-left">
+                    <img src="{{ book.cover_image.url }}" alt="{{ book.title }}" class="book-detail-image">
+                </div>
+
+                <div class="book-detail-right">
+                    <h1 class="book-title">{{ book.title }}</h1>
+
+                    <h3 class="book-author">
+                        <span id="openAuthorModal" style="cursor:pointer; text-decoration: underline;">
+                            {{ book.author.name }} {{ book.author.surname }}
+                        </span>
+                    </h3>
+
+                    <p class="book-pages"><strong>Pages:</strong> {{ book.number_of_pages }}</p>
+                    <p class="book-genre"><strong>Genre:</strong> {{ book.get_genre_display }}</p>
+                    <p class="book-genre"><strong>Published:</strong> {{ book.published_date|date:"F j, Y" }}</p>
+
+                    <button id="openSummaryModal" class="review-submit">Show summary</button>
+
+                    <div class="action-icons">
+                     
+                        <a href="{% url 'wishlist_book' book.id %}"
+                           class="action-icon favorite-icon {% if book in user.userprofile.wishlist_books.all %}filled{% endif %}"
+                           title="Add to Wishlist">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 
+                                         2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 
+                                         4.5 2.09C13.09 3.81 14.76 3 16.5 3 
+                                         19.58 3 22 5.42 22 8.5c0 3.78-3.4 
+                                         6.86-8.55 11.54L12 21.35z"/>
+                            </svg>
+                        </a>
+
+                        <a href="{% url 'mark_book_read' book.id %}"
+                           class="action-icon read-icon {% if book in user.userprofile.read_books.all %}filled{% endif %}"
+                           title="Mark as Read">
+                            <svg class="icon" viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 
+                                         4.39 6 7.5 11 7.5s9.27-3.11 
+                                         11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 
+                                         17c-2.76 0-5-2.24-5-5s2.24-5 
+                                         5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 
+                                         0-3 1.34-3 3s1.34 3 3 3 
+                                         3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </a>
+
+                        <a href="{% url 'currently_reading_books' book.id %}"
+                           class="action-icon currently-reading-icon {% if book in user.userprofile.currently_reading_books.all %}filled{% endif %}"
+                           title="Add to Currently Reading">
                             <i class="fas fa-book" style="font-size: 20px; color: transparent; -webkit-text-stroke: 1px black;"></i>
-                    </a>
+                        </a>
+                    </div>
                 </div>
             </div>
-        </div>
+                {% if book.famous_quote %}
+                    <blockquote class="book-quote">“{{ book.famous_quote }}”</blockquote>
+                {% endif %}
+            
+        <div class="reviews-display">
 
-        {% if book.famous_quote %}
-            <blockquote class="book-quote">
-                “{{ book.famous_quote }}”
-            </blockquote>
-        {% endif %}
-
-       <div class="reviews-display">
-    <div class="rating-section">
-        <div class="rating-content">
-            {% if user.is_authenticated %}
-                <form method="POST" id="ratingForm" style="margin: 0;">
-                    {% csrf_token %}
-                    <div class="star-rating">
-                        {% for i in "54321" %}
-                            {% with i_int=i|add:0 %}
-                                <input 
-                                    type="radio" 
-                                    id="star{{ i }}" 
-                                    name="rating" 
-                                    value="{{ i }}" 
-                                    onchange="submitRating()" 
-                                    {% if user_rating == i_int %}checked{% endif %}
-                                    {% if user_rating %}disabled{% endif %}>
-                                <label for="star{{ i }}" title="{{ i }} stars">★</label>
-                            {% endwith %}
-                        {% endfor %}
+            <div class="rating-section">
+                <div class="rating-content">
+                    {% if user.is_authenticated %}
+                        <form method="POST" id="ratingForm" style="margin: 0;">
+                            {% csrf_token %}
+                            <div class="star-rating">
+                                {% for i in "54321" %}
+                                    {% with i_int=i|add:0 %}
+                                        <input type="radio"
+                                               id="star{{ i }}"
+                                               name="rating"
+                                               value="{{ i }}"
+                                               onchange="submitRating()"
+                                               {% if user_rating == i_int %}checked{% endif %}
+                                               {% if user_rating %}disabled{% endif %}>
+                                        <label for="star{{ i }}" title="{{ i }} stars">★</label>
+                                    {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </form>
+                    {% endif %}
+                    <div class="average-rating-text">
+                        Average: <span class="average-rating">{{ book.average_rating }}</span>/5
                     </div>
-                </form>
-            {% endif %}
-            <div class="average-rating-text">
-                Average: <span class="average-rating">{{ book.average_rating }}</span>/5
+                </div>
             </div>
-        </div>
-    </div>
 
-    <h2>Reviews</h2>
-    {% if reviews %}
-        {% for review in reviews %}
-            <div class="single-review">
-                <p class="review-author">
-                    <strong>
-                        <a>{{ review.user.username }}</a>
-                    </strong>:
-                    </p>
-                <p class="review-content">{{ review.content }}</p>
-                <p class="review-date">{{ review.created_at|date:"F j, Y, g:i a" }}</p>
+            <h2>Reviews</h2>
+            {% if reviews %}
+                {% for review in reviews %}
+                    <div class="single-review">
+                        <p class="review-author">
+                            <strong><a>{{ review.user.username }}</a></strong>:
+                        </p>
+                        <p class="review-content">{{ review.content }}</p>
+                        <p class="review-date">{{ review.created_at|date:"F j, Y, g:i a" }}</p>
 
+                        {% if user.is_authenticated %}
+                            <form method="POST" action="{% url 'toggle_review_like' review.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="like-button">
+                                    {% if review.user_liked %}Unlike{% else %}Like{% endif %}
+                                </button>
+                                <span>{{ review.total_likes }} like{{ review.total_likes|pluralize }}</span>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No reviews yet.</p>
+            {% endif %}
+
+            <div class="review-section" style="text-align: center;">
                 {% if user.is_authenticated %}
-                    <form method="POST" action="{% url 'toggle_review_like' review.id %}">
-                        {% csrf_token %}
-                        <button type="submit" class="like-button">
-                            {% if review.user_liked %}Unlike{% else %}Like{% endif %}
-                        </button>
-                        <span>{{ review.total_likes }} like{{ review.total_likes|pluralize }}</span>
-                    </form>
+                    <button class="review-submit" id="openReviewModal">Add Review</button>
+                {% else %}
+                    <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
                 {% endif %}
             </div>
-        {% endfor %}
-    {% else %}
-        <p>No reviews yet.</p>
-    {% endif %}
+        </div>
 
-    <div class="review-section" style="text-align: center;">
-        {% if user.is_authenticated %}
-            <button class="review-submit" id="openReviewModal">Add Review</button>
-        {% else %}
-            <p><a href="{% url 'login' %}">Log in</a> to write a review.</p>
-        {% endif %}
+        <div class="review-modal" id="summaryModal">
+            <div class="review-modal-content">
+                <span class="close-modal" id="closeSummaryModal">×</span>
+                <h2>{{ book.title }}</h2>
+                <p class="author-info">{{ book.summary }}</p>
+            </div>
+        </div>
+
+        <div class="review-modal" id="authorModal">
+            <div class="review-modal-content">
+                <span class="close-modal" id="closeAuthorModal">×</span>
+                <h2><strong>{{ book.author.name }} {{ book.author.surname }}</strong></h2><br>
+                <p class="author-info"><strong>Born: </strong>{{ book.author.born }} - {{ book.author.place }}</p><br>
+                <p class="author-info"><strong>Occupation: </strong>{{ book.author.occupation }}</p><br>
+                <p class="author-info"><strong>Genre: </strong>{{ book.author.genre }}</p><br>
+                <p class="author-info"><strong>Notable works: </strong>{{ book.author.notable_works }}</p><br>
+                <p class="author-info"><strong>Achievements: </strong>{{ book.author.achievements }}</p>
+            </div>
+        </div>
+
+        <div class="review-modal" id="reviewModal">
+            <div class="review-modal-content">
+                <span class="close-modal" id="closeModal">×</span>
+                <h2 class="modal-title">Leave a Review</h2>
+                <form method="POST" action="" class="form-container">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="review-submit" name="review_submit">Submit</button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
-
-<div class="review-modal" id="summaryModal">
-    <div class="review-modal-content">
-        <span class="close-modal" id="closeSummaryModal">×</span>
-        <h2>{{ book.title }}</h2>
-        <p class="author-info">{{ book.summary }}</p>
-    </div>
 </div>
-
-<div class="review-modal" id="authorModal">
-    <div class="review-modal-content">
-        <span class="close-modal" id="closeAuthorModal">×</span>
-        <h2><strong>{{ book.author.name }} {{book.author.surname}}</strong></h2><br>
-        <p class="author-info"><strong>Born: </strong>{{book.author.born}} - {{book.author.place}}</p><br>
-        <p class="author-info"><strong>Occupation: </strong>{{book.author.occupation}}</p><br>
-        <p class="author-info"><strong>Genre: </strong>{{ book.author.genre }}</p><br>
-        <p class="author-info"><strong>Notable works: </strong>{{ book.author.notable_works }}</p><br>
-        <p class="author-info"><strong>Achievements: </strong>{{book.author.achievements}}</p>
-    </div>
-</div>
-
-
-<div class="review-modal" id="reviewModal">
-    <div class="review-modal-content">
-        <span class="close-modal" id="closeModal">×</span>
-        <h2 class="modal-title">Leave a Review</h2>
-        <form method="POST" action="" class="form-container">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit" class="review-submit" name="review_submit">Submit</button>
-        </form>
-    </div>
-</div>
-
-
 
 <script src="{% static 'js/book_details.js' %}"></script>
 {% endblock %}

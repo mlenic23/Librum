@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(data => {
                 if (data.status === 'success') {
                     document.getElementById('pagesRead').value = '';
-                    // Refresh progress bar
+                    
                     fetch(`/books/${bookId}/total-progress/?t=${Date.now()}`)
                         .then(response => response.json())
                         .then(data => {

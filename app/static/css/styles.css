@@ -4,9 +4,11 @@
     font-family: "Merriweather", serif;
     color:hsl(22, 29%, 61%);
 }
+
 html, body{
     height: 100%;
 }
+
 body {
     margin: 0;
     padding: 0;
@@ -39,6 +41,7 @@ body {
     align-items: center;
     overflow: hidden;
 }
+
 ul {
     margin: 0;
     padding: 0;
@@ -122,6 +125,7 @@ nav {
     transition: all 0.3s ease;
     margin-right: 10px;
 }
+
 .video-overlay {
     position: absolute;
     top: 50%;
@@ -322,7 +326,6 @@ li a img {
 .quote-section {
     max-width: 700px;
     text-align: center;
-
 }
 
 .quote {
@@ -567,6 +570,7 @@ li a img {
     flex-direction: column;
     flex: 1;
 }
+
 .bookQuote {
     margin-top: 30px;
     margin-left:5px;
@@ -683,7 +687,6 @@ input[type="number"] {
     color:#6e4b3a;
 }
 
-
 #year-slider {
     margin-left:20px;
     margin-right:20px;
@@ -728,8 +731,6 @@ input[type="number"] {
     border: none;
 }
 
-
-
 .book-details-flex {
     background: url('/static/photo/detail_photo.png');
     background-size: cover, auto;
@@ -751,6 +752,7 @@ input[type="number"] {
     max-width: 1400px; 
     width: 100%;
 }
+
 .book-details-flex::before {
     content: '';
     position: absolute;
@@ -981,9 +983,11 @@ input[type="number"] {
     color: #6e4b3a;
     margin-bottom: 5px;
 }
+
 .review-author:hover{
     color:#c8b19e;
 }
+
 .review-content {
     font-size: 1.1em;
     color: #5a4537;
@@ -1078,6 +1082,7 @@ input[type="number"] {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
 }
+
 .close-modal {
     position: absolute;
     top: 12px;
